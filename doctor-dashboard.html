@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard Médico | MediPortal</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  
+  <!-- Plugins Needed for the Project -->
+  <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="plugins/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="plugins/animate.css">
+  
+  <!-- Stylesheet -->
+  <link href="css/style.css" rel="stylesheet">
+  <link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+  <style>
+    /* Estilos del Dashboard */
+    .doctor-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 15px 0;
+    }
+    .metric-card {
+      background: #f4fbfb;
+      border: 1px solid #48bdc5;
+      border-radius: 8px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .metric-card .icon {
+      font-size: 2rem;
+      color: #48bdc5;
+    }
+    
+    /* Time-Grid / Estructura del Día */
+    .schedule-container {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .time-slot {
+      display: flex;
+      border-bottom: 1px solid #f0f0f0;
+      min-height: 80px;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .time-label {
+      width: 90px;
+      background: #fafafa;
+      border-right: 1px solid #e0e0e0;
+      padding: 15px 10px;
+      font-weight: bold;
+      color: #666;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .slot-content {
+      flex-grow: 1;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    /* Estados de Cita */
+    .time-slot.past-slot {
+      background-color: #f8f9fa;
+      opacity: 0.6;
+      pointer-events: none; /* Desactivación automática */
+    }
+    .time-slot.past-slot .badge-status {
+      background-color: #6c757d;
+      color: white;
+    }
+    .time-slot.active-slot {
+      background-color: #ffffff;
+    }
+    .time-slot.selected-slot {
+      background-color: #e8f7f8;
+      border-left: 4px solid #48bdc5;
+    }
+
+    /* Layout Panel Dividido (Modo Consulta Activa) */
+    .workspace-wrapper {
+      transition: all 0.3s ease;
+    }
+    .consultation-panel {
+      display: none; /* Se activa al seleccionar una cita */
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 20px;
+    }
+    
+    .patient-info-box {
+      background: #f9f9f9;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray">
+<div class="page-wrapper">
+
+  <!-- Encabezado del Doctor -->
+  <header class="doctor-header shadow-sm mb-4">
+    <div class="container-fluid px-4">
+      <div class="row align-items-center">
+        <div class="col-md-4 col-6">
+          <div class="logo">
+            <a href="index.html">
+              <img loading="lazy" class="img-fluid" src="images/logo.png" alt="logo" style="max-height: 45px;">
+            </a>
+          </div>
+        </div>
+        <div class="col-md-8 col-6 text-right d-flex align-items-center justify-content-end">
+          <div class="user-profile mr-3 text-right d-none d-md-block">
+            <h6 class="mb-0 font-weight-bold">Dr. Alejandro Morales</h6>
+            <small class="text-muted">Cardiología Clinica</small>
+          </div>
+          <img src="images/team/1.jpg" alt="Doctor Avatar" class="rounded-circle mr-3" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/40'">
+          <a href="login.html" class="btn btn-sm btn-outline-danger" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container-fluid px-4">
+    
+    <!-- Métrica Semanal y Control de Agenda Día -->
+    <div class="row mb-4 align-items-center">
+      
+      <!-- Selector de Fecha / Día -->
+      <div class="col-lg-7 col-md-6 mb-3 mb-md-0">
+        <div class="d-flex align-items-center flex-wrap gap-2">
+          <h3 class="mb-0 font-weight-bold mr-3">Agenda del Día</h3>
+          <div class="input-group" style="max-width: 280px;">
+            <input type="date" class="form-control" id="agendaDate" value="2026-09-15" onchange="filterDate(this.value)">
+            <div class="input-group-append">
+              <button class="btn btn-style-one py-0 px-3" type="button" onclick="resetToday()"><i class="fas fa-calendar-day mr-1"></i> Hoy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Métrica Semanal Superior -->
+      <div class="col-lg-5 col-md-6">
+        <div class="metric-card">
+          <div>
+            <span class="text-muted small text-uppercase font-weight-bold">Citas Completadas esta Semana</span>
+            <h3 class="mb-0 text-dark font-weight-bold" id="weeklyCounter">28 <span class="small text-success" style="font-size: 0.9rem;"><i class="fas fa-arrow-up"></i> +4 hoy</span></h3>
+          </div>
+          <div class="icon">
+            <i class="fas fa-user-check"></i>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Workspace Principal (Soporta Vista Pantalla Entera y Split Screen) -->
+    <div class="row workspace-wrapper">
+      
+      <!-- Columna Principal: Time-Grid / Calendario Diario -->
+      <div class="col-lg-12" id="calendarColumn">
+        <div class="schedule-container shadow-sm">
+          
+          <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+            <span class="font-weight-bold text-muted" id="selectedDateTitle"><i class="far fa-calendar-alt mr-2"></i> Martes, 15 de Septiembre de 2026</span>
+            <span class="badge badge-info px-3 py-2">Modo Consulta Activo</span>
+          </div>
+
+          <!-- Time Grid / Bloques Horarios -->
+          <div class="time-grid-wrapper">
+
+            <!-- Bloque 08:00 AM (Pasado / Bloqueado Automático) -->
+            <div class="time-slot past-slot">
+              <div class="time-label">08:00 AM</div>
+              <div class="slot-content">
+                <div>
+                  <h6 class="mb-1 font-weight-bold text-secondary">Roberto Gómez Fernández</h6>
+                  <small class="text-muted"><i class="fas fa-file-medical mr-1"></i> Consulta General • Concluido</small>
+                </div>
+                <div>
+                  <span class="badge badge-status px-3 py-2"><i class="fas fa-lock mr-1"></i> Finalizada</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque 09:00 AM (Pasado / Bloqueado Automático) -->
+            <div class="time-slot past-slot">
+              <div class="time-label">09:00 AM</div>
+              <div class="slot-content">
+                <div>
+                  <h6 class="mb-1 font-weight-bold text-secondary">Mariana Ríos Torres</h6>
+                  <small class="text-muted"><i class="fas fa-heartbeat mr-1"></i> Seguimiento ECG • Concluido</small>
+                </div>
+                <div>
+                  <span class="badge badge-status px-3 py-2"><i class="fas fa-lock mr-1"></i> Finalizada</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque 10:00 AM (Pendiente / Activa) -->
+            <div class="time-slot active-slot" id="slot-1">
+              <div class="time-label">10:00 AM</div>
+              <div class="slot-content">
+                <div>
+                  <h6 class="mb-1 font-weight-bold text-primary">Carlos Eduardo Mendoza</h6>
+                  <small class="text-dark"><i class="fas fa-stethoscope mr-1"></i> Motivo: Dolor torácico moderado y palpitaciones</small>
+                </div>
+                <div>
+                  <button class="btn btn-style-one btn-sm" onclick="openConsultation('Carlos Eduardo Mendoza', '34 años', 'EXP-8842', 'Hipertensión arterial', 'Dolor opresivo en pecho tras actividad física.', 'slot-1')">
+                    <i class="fas fa-notes-medical mr-1"></i> Iniciar Consulta
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque 11:00 AM (Pendiente / Activa) -->
+            <div class="time-slot active-slot" id="slot-2">
+              <div class="time-label">11:00 AM</div>
+              <div class="slot-content">
+                <div>
+                  <h6 class="mb-1 font-weight-bold text-primary">Ana Sofía Martínez</h6>
+                  <small class="text-dark"><i class="fas fa-stethoscope mr-1"></i> Motivo: Revision de laboratorios anuales</small>
+                </div>
+                <div>
+                  <button class="btn btn-outline-info btn-sm" onclick="openConsultation('Ana Sofía Martínez', '28 años', 'EXP-9102', 'Ninguno', 'Chequeo de rutina y perfil lipídico.', 'slot-2')">
+                    <i class="fas fa-eye mr-1"></i> Ver Detalle / Iniciar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bloque 12:00 PM (Disponible / Libre) -->
+            <div class="time-slot active-slot">
+              <div class="time-label">12:00 PM</div>
+              <div class="slot-content bg-light">
+                <span class="text-muted font-italic"><i class="far fa-clock mr-1"></i> Espacio libre disponible</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Dividido: Sección Izquierda/Inferior (Modo Consulta Activa) -->
+      <div class="col-lg-6" id="consultationColumn">
+        <div class="consultation-panel" id="consultationPanel">
+          
+          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <h4 class="mb-0 font-weight-bold text-primary"><i class="fas fa-user-md mr-2"></i>Consulta en Curso</h4>
+            <button type="button" class="close text-danger" onclick="closeConsultation()" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <!-- Información del Paciente (Sección Izquierda del Split) -->
+          <div class="patient-info-box">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h5 class="font-weight-bold mb-1" id="patientName">Carlos Eduardo Mendoza</h5>
+                <p class="text-muted mb-1 small" id="patientMeta">34 años | Expediente: EXP-8842</p>
+              </div>
+              <span class="badge badge-warning">En Atención</span>
+            </div>
+            <hr class="my-2">
+            <div class="row small">
+              <div class="col-6">
+                <strong>Antecedentes:</strong>
+                <p class="mb-0 text-muted" id="patientHistory">Hipertensión arterial</p>
+              </div>
+              <div class="col-6">
+                <strong>Motivo Consulta:</strong>
+                <p class="mb-0 text-muted" id="patientReason">Dolor torácico moderado.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nota Médica e Interacción (Sección Inferior/Derecha) -->
+          <form onsubmit="finishConsultation(event)">
+            <div class="form-group mb-2">
+              <label class="font-weight-bold small"><i class="fas fa-edit mr-1"></i> Observaciones y Evolución Clínica</label>
+              <textarea class="form-control" rows="4" placeholder="Escribe aquí los síntomas, hallazgos del examen físico y observaciones..." required></textarea>
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="font-weight-bold small"><i class="fas fa-prescription mr-1"></i> Prescripción / Plan Médico</label>
+              <textarea class="form-control" rows="3" placeholder="Medicamentos, dosis, indicaciones y estudios a solicitar..."></textarea>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-style-one w-100 mr-2"><i class="fas fa-check-circle mr-1"></i> Finalizar Consulta</button>
+              <button type="button" class="btn btn-light border" onclick="closeConsultation()">Cancelar</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer Simplificado -->
+  <footer class="footer-bottom mt-5">
+    <div class="container text-center">
+      <p class="mb-0">&copy; 2026 MediPortal. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script src="plugins/jquery.min.js"></script>
+<script src="plugins/bootstrap/bootstrap.min.js"></script>
+
+<script>
+  let activeSlotId = null;
+
+  // Abrir panel dividido (Split Screen) al presionar una cita activa
+  function openConsultation(name, meta, exp, history, reason, slotId) {
+    // Actualizar datos del paciente
+    document.getElementById('patientName').textContent = name;
+    document.getElementById('patientMeta').textContent = meta + ' | Expediente: ' + exp;
+    document.getElementById('patientHistory').textContent = history;
+    document.getElementById('patientReason').textContent = reason;
+
+    // Resaltar renglón seleccionado
+    if (activeSlotId) {
+      document.getElementById(activeSlotId).classList.remove('selected-slot');
+    }
+    activeSlotId = slotId;
+    document.getElementById(slotId).classList.add('selected-slot');
+
+    // Cambiar layout a Pantalla Dividida (50% / 50%)
+    document.getElementById('calendarColumn').className = 'col-lg-6';
+    document.getElementById('consultationColumn').style.display = 'block';
+    document.getElementById('consultationPanel').style.display = 'block';
+  }
+
+  // Cerrar panel dividido y regresar a Fullscreen
+  function closeConsultation() {
+    if (activeSlotId) {
+      document.getElementById(activeSlotId).classList.remove('selected-slot');
+    }
+    document.getElementById('calendarColumn').className = 'col-lg-12';
+    document.getElementById('consultationPanel').style.display = 'none';
+  }
+
+  // Finalizar consulta y actualizar contador
+  function finishConsultation(e) {
+    e.preventDefault();
+    alert('Consulta registrada y expediente actualizado correctamente.');
+    
+    // Incrementar métrica rápida
+    const counterEl = document.getElementById('weeklyCounter');
+    let currentVal = parseInt(counterEl.textContent);
+    counterEl.childNodes[0].textContent = (currentVal + 1) + ' ';
+
+    closeConsultation();
+  }
+
+  // Cambiar fecha
+  function filterDate(val) {
+    document.getElementById('selectedDateTitle').innerHTML = '<i class="far fa-calendar-alt mr-2"></i> Citas para: ' + val;
+    closeConsultation();
+  }
+
+  // Regresar a HOY
+  function resetToday() {
+    document.getElementById('agendaDate').value = '2026-09-15';
+    filterDate('2026-09-15');
+  }
+</script>
+
+</body>
+</html>

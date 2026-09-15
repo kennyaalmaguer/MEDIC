@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <!-- ** Basic Page Needs ** -->
+  <meta charset="utf-8">
+  <title>Planes de Suscripción y Pago | MediPortal</title>
+
+  <!-- ** Mobile Specific Metas ** -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Selecciona tu plan de suscripción e inicia inmediatamente a gestionar tu agenda y pacientes.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  
+  <!-- ** Plugins Needed for the Project ** -->
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
+  <!-- Slick Carousel -->
+  <link rel="stylesheet" href="plugins/slick/slick.css">
+  <link rel="stylesheet" href="plugins/slick/slick-theme.css">
+  <!-- FancyBox -->
+  <link rel="stylesheet" href="plugins/fancybox/jquery.fancybox.min.css">
+  <!-- fontawesome -->
+  <link rel="stylesheet" href="plugins/fontawesome/css/all.min.css">
+  <!-- animate.css -->
+  <link rel="stylesheet" href="plugins/animation/animate.min.css">
+  <!-- jquery-ui -->
+  <link rel="stylesheet" href="plugins/jquery-ui/jquery-ui.css">
+  
+  <!-- Stylesheets -->
+  <link href="css/style.css" rel="stylesheet">
+  
+  <!--Favicon-->
+  <link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+  <style>
+    /* Estilos complementarios utilizando los colores del tema */
+    .switch-toggle-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    .pricing-card {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 30px 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .pricing-card:hover {
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .pricing-card.popular {
+      border: 2px solid #48bdc5; /* Color primario del tema */
+      transform: scale(1.03);
+    }
+    .badge-popular {
+      position: absolute;
+      top: -15px;
+      right: 20px;
+      background: #48bdc5;
+      color: #fff;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .order-summary-box {
+      background: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 25px;
+    }
+    .payment-method-card {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 15px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .payment-method-card.active {
+      border-color: #48bdc5;
+      background-color: #f4fbfb;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="page-wrapper">
+
+<!--Header Upper-->
+<section class="header-uper">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-xl-4 col-lg-3">
+        <div class="logo">
+          <a href="index.html">
+            <img loading="lazy" class="img-fluid" src="images/logo.png" alt="logo">
+          </a>
+        </div>
+      </div>
+      <div class="col-xl-8 col-lg-9">
+        <div class="right-side">
+          <ul class="contact-info pl-0 mb-4 mb-md-0">
+            <li class="item text-left">
+              <div class="icon-box">
+                <i class="far fa-envelope"></i>
+              </div>
+              <strong>Soporte</strong>
+              <br>
+              <a href="mailto:soporte@mediportal.com">
+                <span>soporte@mediportal.com</span>
+              </a>
+            </li>
+            <li class="item text-left">
+              <div class="icon-box">
+                <i class="fas fa-phone"></i>
+              </div>
+              <strong>Atención</strong>
+              <br>
+              <span>+52 (800) 123-4567</span>
+            </li>
+          </ul>
+          <div class="link-btn text-center text-lg-right">
+            <a href="login.html" class="btn-style-one">Iniciar Sesión</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--Main Header-->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarLinks" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarLinks">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Inicio</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="#planes">Planes y Precios</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#pago">Proceso de Pago</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!--=================================
+=            Page Title             =
+==================================-->
+<section class="page-title text-center" style="background-image:url(images/background/3.jpg);">
+    <div class="container">
+        <div class="title-text">
+            <h1>Suscripción y Proceso de Pago</h1>
+            <ul class="title-menu list-inline">
+                <li class="list-inline-item"><a href="index.html">Inicio</a></li>
+                <li class="list-inline-item">/</li>
+                <li class="list-inline-item active">Planes de Suscripción</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!--=================================
+=     Tabla Comparativa de Planes   =
+==================================-->
+<section id="planes" class="service-section section">
+  <div class="container">
+    <div class="section-title text-center">
+      <h3>Elige el Plan Ideal <span>para tu Práctica</span></h3>
+      <p>Selecciona la frecuencia de pago y el nivel de servicio que necesitas. Puedes cambiar de plan en cualquier momento.</p>
+      
+      <!-- Selector Mensual / Anual -->
+      <div class="switch-toggle-wrapper mt-4">
+        <span class="font-weight-bold">Pago Mensual</span>
+        <div class="custom-control custom-switch d-inline-block">
+          <input type="checkbox" class="custom-control-input" id="billingToggle" onchange="toggleBilling()">
+          <label class="custom-control-label" for="billingToggle"></label>
+        </div>
+      
+        <span class="font-weight-bold">Pago Anual <span class="badge badge-success">(Ahorra 20%)</span></span>
+      </div>
+    </div>
+  <hr>
+    <!-- Cards de Planes -->
+    <div class="row align-items-center justify-content-center">
+      
+      <!-- Plan Individual -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="pricing-card text-center">
+          <h4 class="font-weight-bold">Plan Individual</h4>
+          <p class="text-muted">Para médicos o psicólogos independientes.</p>
+          <div class="price my-3">
+            <h2 class="d-inline-block font-weight-bold text-dark price-val" data-monthly="29" data-yearly="23">$29</h2>
+            <span class="text-muted">USD / mes</span>
+          </div>
+          <button class="btn btn-style-one w-100 my-3" onclick="selectPlan('Plan Individual', 29)">Seleccionar Plan</button>
+          
+          <hr>
+          <ul class="text-left list-unstyled mt-3">
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Límite de Pacientes:</strong> Hasta 200</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Almacenamiento:</strong> 10 GB</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Número de Médicos:</strong> 1 Profesional</li>
+            <li class="py-1"><i class="fa fa-times text-muted mr-2"></i> <strong>Medicamentos Controlados:</strong> No incluido (o Inhabilitado para Psicología)</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> Agenda en Línea y Consultas</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Plan Clínica (Destacado) -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="pricing-card popular text-center">
+          <span class="badge-popular">Más Popular</span>
+          <h4 class="font-weight-bold">Plan Clínica</h4>
+          <p class="text-muted">Para consultorios en crecimiento y especialidades.</p>
+          <div class="price my-3">
+            <h2 class="d-inline-block font-weight-bold text-dark price-val" data-monthly="49" data-yearly="39">$49</h2>
+            <span class="text-muted">USD / mes</span>
+          </div>
+          <button class="btn btn-main w-100 my-3" onclick="selectPlan('Plan Clínica', 49)">Seleccionar Plan</button>
+          
+          <hr>
+          <ul class="text-left list-unstyled mt-3">
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Límite de Pacientes:</strong> Ilimitados</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Almacenamiento:</strong> 100 GB</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Número de Médicos:</strong> Hasta 3 Profesionales</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Medicamentos Controlados:</strong> Módulo Completo</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> Recetas Digitales y Firma</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Plan Institucional -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="pricing-card text-center">
+          <h4 class="font-weight-bold">Plan Institucional</h4>
+          <p class="text-muted">Para centros médicos o sanatorios completos.</p>
+          <div class="price my-3">
+            <h2 class="d-inline-block font-weight-bold text-dark price-val" data-monthly="89" data-yearly="71">$89</h2>
+            <span class="text-muted">USD / mes</span>
+          </div>
+          <button class="btn btn-style-one w-100 my-3" onclick="selectPlan('Plan Institucional', 89)">Seleccionar Plan</button>
+          
+          <hr>
+          <ul class="text-left list-unstyled mt-3">
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Límite de Pacientes:</strong> Ilimitados</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Almacenamiento:</strong> 1 TB (Nube dedicada)</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Número de Médicos:</strong> Médicos Ilimitados</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Medicamentos Controlados:</strong> Avanzado con Inventario</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> Soporte Prioritario 24/7</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!--=================================
+=     Formulario y Proceso de Pago  =
+==================================-->
+<section id="pago" class="appoinment-section section bg-gray">
+  <div class="container">
+    <div class="row">
+      
+      <!-- Resumen del Pedido -->
+      <div class="col-lg-5 mb-4">
+        <div class="order-summary-box">
+          <div class="section-title mb-3">
+            <h3>Resumen del <span>Pedido</span></h3>
+          </div>
+          
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="font-weight-bold" id="summaryPlanName">Plan Clínica</span>
+            <span class="badge badge-info" id="summaryBillingCycle">Mensual</span>
+          </div>
+          
+          <p class="text-muted small mb-3">Incluye prueba gratuita de 14 días. No se realizará ningún cargo hasta finalizar el periodo de prueba.</p>
+          <hr>
+          
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span id="summarySubtotal">$49.00 USD</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Descuento / Promo:</span>
+            <span class="text-success" id="summaryDiscount">-$0.00 USD</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between font-weight-bold h5">
+            <span>Total a Pagar Hoy:</span>
+            <span class="text-primary" id="summaryTotal">$0.00 USD</span>
+          </div>
+          <small class="text-muted d-block text-right">(Posteriormente <span id="summaryRecurring">$49.00 USD/mes</span>)</small>
+          
+          <div class="alert alert-success mt-4 mb-0" role="alert">
+            <i class="fas fa-shield-alt mr-2"></i> Transacción segura encriptada con SSL de 256 bits.
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario de Transacción Financiera -->
+      <div class="col-lg-7">
+        <div class="contact-area pl-0 pl-lg-4 bg-white p-4 rounded border">
+          <div class="section-title">
+            <h3>Método de <span>Pago</span></h3>
+          </div>
+
+          <form id="paymentForm" onsubmit="processPayment(event)" class="default-form contact-form">
+            
+            <!-- Selección de Método de Pago -->
+            <div class="row mb-4">
+              <div class="col-md-6 mb-2">
+                <div class="payment-method-card active" onclick="setPaymentMethod('card', this)">
+                  <div class="custom-control custom-radio">
+                    <input type="radio" id="payCard" name="paymentMethod" class="custom-control-input" checked>
+                    <label class="custom-control-label font-weight-bold" for="payCard">
+                      Tarjeta de Crédito / Débito
+                    </label>
+                  </div>
+                  <div class="mt-2 text-muted small">
+                    <i class="fab fa-cc-visa fa-2x mr-1"></i>
+                    <i class="fab fa-cc-mastercard fa-2x mr-1"></i>
+                    <i class="fab fa-cc-amex fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-2">
+                <div class="payment-method-card" onclick="setPaymentMethod('paypal', this)">
+                  <div class="custom-control custom-radio">
+                    <input type="radio" id="payPaypal" name="paymentMethod" class="custom-control-input">
+                    <label class="custom-control-label font-weight-bold" for="payPaypal">
+                      PayPal
+                    </label>
+                  </div>
+                  <div class="mt-2 text-muted small">
+                    <i class="fab fa-paypal fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Campos de Tarjeta -->
+            <div id="cardFields">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="small font-weight-bold">Nombre del Titular</label>
+                    <input class="form-control" type="text" placeholder="Como aparece en la tarjeta" required>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="small font-weight-bold">Número de Tarjeta</label>
+                    <div class="input-group">
+                      <input class="form-control" type="text" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="fa fa-credit-card"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="small font-weight-bold">Fecha de Expiración</label>
+                    <input class="form-control" type="text" placeholder="MM/AA" maxlength="5" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="small font-weight-bold">Código CVC / CVV</label>
+                    <input class="form-control" type="text" placeholder="123" maxlength="4" required>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group mt-3">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="termsCheck" required>
+                <label class="custom-control-label small" for="termsCheck">
+                  Acepto los <a href="terms.html" target="_blank">Términos de Servicio</a> y la <a href="privacy.html" target="_blank">Política de Privacidad</a>.
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group text-center mt-4">
+              <button type="submit" class="btn-style-one w-100">Confirmar Suscripción e Iniciar Servicio</button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Modal de Confirmación y Recibo Digital -->
+<div class="modal fade" id="receiptModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title text-white"><i class="fas fa-check-circle mr-2"></i> ¡Suscripción Confirmada!</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <i class="fas fa-receipt fa-4x text-success mb-3"></i>
+        <h4>Recibo Digital de Compra</h4>
+        <p class="text-muted small">Se ha enviado una copia de este recibo a tu correo electrónico.</p>
+        
+        <div class="border rounded p-3 text-left my-3 bg-light small">
+          <div class="d-flex justify-content-between mb-1">
+            <strong>Folio de Transacción:</strong>
+            <span id="receiptFolio">#MP-98421</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <strong>Plan Contratado:</strong>
+            <span id="receiptPlan">Plan Clínica</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <strong>Estado del Servicio:</strong>
+            <span class="text-success font-weight-bold">Activo (Periodo de Prueba)</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <strong>Importe Cobrado Hoy:</strong>
+            <span>$0.00 USD</span>
+          </div>
+        </div>
+
+        <p>Tu plataforma está lista para ser utilizada inmediatamente.</p>
+        <a href="login.html" class="btn btn-main w-100">Ir a mi Panel de Control</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--footer-main-->
+<footer class="footer-main">
+  <div class="footer-top">
+    <div class="container">
+      <div class="row justify-content-between">
+        <div class="col-lg-4 mb-5 mb-lg-0">
+          <div class="about-widget">
+            <div class="footer-logo">
+              <figure>
+                <a href="index.html">
+                  <img loading="lazy" class="img-fluid" src="images/logo-2.png" alt="medic">
+                </a>
+              </figure>
+            </div>
+            <p>Plataforma para la gestión médica, agenda de pacientes y control de expedientes para médicos y psicólogos.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-5 mb-3 mb-md-0">
+          <h2>Enlaces</h2>
+          <ul class="menu-link">
+            <li><a href="privacy.html"><i class="fa fa-angle-right"></i> Políticas de Privacidad</a></li>
+            <li><a href="terms.html"><i class="fa fa-angle-right"></i> Términos de Servicio</a></li>
+            <li><a href="contact.html"><i class="fa fa-angle-right"></i> Contacto y Soporte</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 col-md-7">
+          <h2>Seguridad Garantizada</h2>
+          <p class="text-muted small">Todos los pagos son procesados cumpliendo con los estándares PCI-DSS para garantizar la máxima seguridad en la transacción financiera.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container clearfix">
+      <div class="copyright-text">
+        <p>&copy; 2026 MediPortal. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div>
+
+<!-- Scripts del Tema -->
+<script src="plugins/jquery.min.js"></script>
+<script src="plugins/bootstrap/bootstrap.min.js"></script>
+<script src="plugins/slick/slick.min.js"></script>
+<script src="js/script.js"></script>
+
+<!-- Script Interactivo de Pagos -->
+<script>
+  let currentPlanPrice = 49;
+  let selectedPlanName = "Plan Clínica";
+  let isYearly = false;
+
+  function toggleBilling() {
+    isYearly = document.getElementById('billingToggle').checked;
+    const priceElements = document.querySelectorAll('.price-val');
+    
+    priceElements.forEach(el => {
+      const price = isYearly ? el.getAttribute('data-yearly') : el.getAttribute('data-monthly');
+      el.textContent = '$' + price;
+    });
+
+    updateSummary();
+  }
+
+  function selectPlan(name, price) {
+    selectedPlanName = name;
+    currentPlanPrice = price;
+    updateSummary();
+    
+    // Desplazar al formulario de pago
+    $('html, body').animate({
+      scrollTop: $("#pago").offset().top - 50
+    }, 500);
+  }
+
+  function updateSummary() {
+    const finalPrice = isYearly ? Math.round(currentPlanPrice * 0.8) : currentPlanPrice;
+    const cycleText = isYearly ? "Anual" : "Mensual";
+    const recurringUnit = isYearly ? "/año" : "/mes";
+
+    document.getElementById('summaryPlanName').textContent = selectedPlanName;
+    document.getElementById('summaryBillingCycle').textContent = cycleText;
+    document.getElementById('summarySubtotal').textContent = '$' + finalPrice + '.00 USD';
+    document.getElementById('summaryRecurring').textContent = '$' + finalPrice + '.00 USD' + recurringUnit;
+  }
+
+  function setPaymentMethod(method, element) {
+    document.querySelectorAll('.payment-method-card').forEach(card => card.classList.remove('active'));
+    element.classList.add('active');
+    
+    if (method === 'card') {
+      document.getElementById('payCard').checked = true;
+      document.getElementById('cardFields').style.display = 'block';
+    } else {
+      document.getElementById('payPaypal').checked = true;
+      document.getElementById('cardFields').style.display = 'none';
+    }
+  }
+
+  function processPayment(event) {
+    event.preventDefault();
+    
+    // Generar Folio Aleatorio
+    const randomFolio = '#MP-' + Math.floor(10000 + Math.random() * 90000);
+    document.getElementById('receiptFolio').textContent = randomFolio;
+    document.getElementById('receiptPlan').textContent = selectedPlanName;
+
+    // Mostrar Modal de Confirmación
+    $('#receiptModal').modal('show');
+  }
+</script>
+
+</body>
+</html>

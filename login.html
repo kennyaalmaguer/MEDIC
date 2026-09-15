@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Acceso y Registro | MediPortal</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  
+  <!-- Plugins Needed for the Project -->
+  <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="plugins/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="plugins/animate.css">
+  
+  <!-- Stylesheet -->
+  <link href="css/style.css" rel="stylesheet">
+  <link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+  <style>
+    .auth-card {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 35px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+    }
+    .nav-pills .nav-link {
+      color: #555;
+      font-weight: 600;
+      border-radius: 4px;
+      padding: 10px 20px;
+    }
+    .nav-pills .nav-link.active {
+      background-color: #48bdc5;
+      color: #fff;
+    }
+    .password-strength-meter {
+      height: 5px;
+      background-color: #e0e0e0;
+      border-radius: 3px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+    .strength-weak { width: 33%; background-color: #dc3545; }
+    .strength-medium { width: 66%; background-color: #ffc107; }
+    .strength-strong { width: 100%; background-color: #28a745; }
+    .custom-tab-wrapper {
+      background: #f4f7f9;
+      border-radius: 6px;
+      padding: 6px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="page-wrapper">
+
+  <!-- Header Básico -->
+  <section class="header-uper">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-xl-4 col-lg-3">
+          <div class="logo">
+            <a href="index.html">
+              <img loading="lazy" class="img-fluid" src="images/logo.png" alt="logo">
+            </a>
+          </div>
+        </div>
+        <div class="col-xl-8 col-lg-9 text-right">
+          <a href="index.html" class="btn-style-one">Volver al Inicio</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Page Title -->
+  <section class="page-title text-center" style="background-image:url(images/background/3.jpg);">
+    <div class="container">
+      <div class="title-text">
+        <h1>Portal de Acceso</h1>
+        <ul class="title-menu list-inline">
+          <li class="list-inline-item"><a href="index.html">Inicio</a></li>
+          <li class="list-inline-item">/</li>
+          <li class="list-inline-item active">Autenticación</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seccion de Autenticación -->
+  <section class="section bg-gray">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+          
+          <!-- Selector Principal: Iniciar Sesión vs Registro -->
+          <div class="custom-tab-wrapper mb-4">
+            <ul class="nav nav-pills nav-justified" id="mainAuthTab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="pills-login-tab" data-toggle="pill" href="#pills-login" role="tab">Iniciar Sesión</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="pills-register-tab" data-toggle="pill" href="#pills-register" role="tab">Crear Cuenta</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="tab-content" id="mainAuthTabContent">
+            
+            <!-- ==========================================
+                 TAB 1: INICIAR SESIÓN (MÉDICO Y PACIENTE)
+                 ========================================== -->
+            <div class="tab-pane fade show active" id="pills-login" role="tabpanel">
+              <div class="auth-card">
+                <div class="section-title text-center mb-4">
+                  <h3>Ingresar a tu <span>Cuenta</span></h3>
+                  <p>Accede como médico o paciente con tus credenciales.</p>
+                </div>
+                <div class="text-center mb-4">
+                  <span class="d-block font-weight-bold mb-2">Selecciona el tipo de perfil:</span>
+                  <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-info active" onclick="switchRegisterMode('doctor')">
+                      <input type="radio" name="userRole" id="roleDoctor" checked> <i class="fas fa-user-md mr-1"></i> Modo Médico
+                    </label>
+                    <label class="btn btn-outline-info" onclick="switchRegisterMode('patient')">
+                      <input type="radio" name="userRole" id="rolePatient"> <i class="fas fa-user mr-1"></i> Modo Paciente
+                    </label>
+                  </div>
+                </div>
+                <form id="loginForm" action="dashboard.html" method="get" class="default-form">
+                  <div class="form-group">
+                    <label class="font-weight-bold small">Correo Electrónico o Usuario</label>
+                    <input type="text" class="form-control" placeholder="ejemplo@correo.com o tu_usuario" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="font-weight-bold small">Contraseña</label>
+                    <input type="password" class="form-control" placeholder="••••••••" required>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" class="custom-control-input" id="rememberMe">
+                      <label class="custom-control-label small" for="rememberMe">Recordarme</label>
+                    </div>
+                    <a href="#modalForgot" data-toggle="modal" class="small text-primary">¿Olvidaste tu contraseña?</a>
+                  </div>
+
+                  <button type="submit" class="btn-style-one w-100">Iniciar Sesión</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- ==========================================
+                 TAB 2: REGISTRO (MÉDICO Y PACIENTE)
+                 ========================================== -->
+            <div class="tab-pane fade" id="pills-register" role="tabpanel">
+              <div class="auth-card">
+                
+                <!-- Selector Modo Médico vs Modo Paciente -->
+                <div class="text-center mb-4">
+                  <span class="d-block font-weight-bold mb-2">Selecciona el tipo de perfil:</span>
+                  <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-outline-info active" onclick="switchRegisterMode('doctor')">
+                      <input type="radio" name="userRole" id="roleDoctor" checked> <i class="fas fa-user-md mr-1"></i> Modo Médico
+                    </label>
+                    <label class="btn btn-outline-info" onclick="switchRegisterMode('patient')">
+                      <input type="radio" name="userRole" id="rolePatient"> <i class="fas fa-user mr-1"></i> Modo Paciente
+                    </label>
+                  </div>
+                </div>
+
+                <!-- FORMULARIO MODO MÉDICO -->
+                <form id="formRegisterDoctor" action="subscribe.html" method="get" class="default-form">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Nombre Completo</label>
+                        <input type="text" class="form-control" placeholder="Dr. Juan Pérez" required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Nombre de Usuario</label>
+                        <input type="text" class="form-control" placeholder="drperez" required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Correo Profesional</label>
+                        <input type="email" class="form-control" placeholder="contacto@clinicaperez.com" required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Teléfono de Contacto</label>
+                        <input type="tel" class="form-control" placeholder="+52 81 0000 0000" required>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Cédula Médica / Especialidad</label>
+                        <input type="text" class="form-control" placeholder="Céd. 12345678 - Cardiología" required>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Contraseña</label>
+                        <input type="password" id="docPassword" class="form-control" placeholder="Crea una contraseña segura" oninput="checkPasswordStrength('docPassword', 'docBar', 'docHint')" required>
+                        <div class="password-strength-meter">
+                          <div id="docBar" class="strength-bar"></div>
+                        </div>
+                        <small id="docHint" class="form-text text-muted">Usa al menos 8 caracteres con letras, números y símbolos.</small>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="custom-control custom-checkbox mb-4">
+                        <input type="checkbox" class="custom-control-input" id="termsDoctor" required>
+                        <label class="custom-control-label small" for="termsDoctor">
+                          Acepto los <a href="#" target="_blank">Términos y Condiciones</a> y el <a href="#" target="_blank">Aviso de Privacidad de Datos Médicos</a>.
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn-style-one w-100">Continuar a Selección de Plan <i class="fas fa-arrow-right ml-2"></i></button>
+                </form>
+
+                <!-- FORMULARIO MODO PACIENTE -->
+                <form id="formRegisterPatient" action="patient-dashboard.html" method="get" class="default-form" style="display: none;">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Nombre Completo</label>
+                        <input type="text" class="form-control" placeholder="María López" required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Nombre de Usuario</label>
+                        <input type="text" class="form-control" placeholder="marialopez" required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Correo Electrónico</label>
+                        <input type="email" class="form-control" placeholder="maria@correo.com" required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Teléfono</label>
+                        <input type="tel" class="form-control" placeholder="+52 81 0000 0000" required>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Contraseña</label>
+                        <input type="password" id="patPassword" class="form-control" placeholder="Crea tu contraseña" oninput="checkPasswordStrength('patPassword', 'patBar', 'patHint')" required>
+                        <div class="password-strength-meter">
+                          <div id="patBar" class="strength-bar"></div>
+                        </div>
+                        <small id="patHint" class="form-text text-muted">Mínimo 8 caracteres.</small>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn-style-one w-100">Completar Registro e Ingresar <i class="fas fa-check-circle ml-2"></i></button>
+                </form>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal Recuperación de Contraseña -->
+  <div class="modal fade" id="modalForgot" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-key text-primary mr-2"></i>Recuperar Contraseña</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="small text-muted mb-3">Ingresa tu correo electrónico asociado a la cuenta y te enviaremos un enlace seguro para restablecer tu contraseña.</p>
+          <form onsubmit="event.preventDefault(); alert('Se ha enviado un enlace de recuperación a tu correo.'); $('#modalForgot').modal('hide');">
+            <div class="form-group">
+              <label class="font-weight-bold small">Correo Electrónico</label>
+              <input type="email" class="form-control" placeholder="correo@ejemplo.com" required>
+            </div>
+            <button type="submit" class="btn-style-one w-100">Enviar Enlace de Recuperación</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <footer class="footer-bottom">
+    <div class="container text-center">
+      <p class="mb-0">&copy; 2026 MediPortal. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+</div>
+
+<script src="plugins/jquery.min.js"></script>
+<script src="plugins/bootstrap/bootstrap.min.js"></script>
+
+<script>
+  // Cambiar entre Modo Médico y Modo Paciente dentro del Registro
+  function switchRegisterMode(mode) {
+    const docForm = document.getElementById('formRegisterDoctor');
+    const patForm = document.getElementById('formRegisterPatient');
+
+    if (mode === 'doctor') {
+      docForm.style.display = 'block';
+      patForm.style.display = 'none';
+    } else {
+      docForm.style.display = 'none';
+      patForm.style.display = 'block';
+    }
+  }
+
+  // Validaciones visuales en tiempo real para la contraseña
+  function checkPasswordStrength(inputId, barId, hintId) {
+    const val = document.getElementById(inputId).value;
+    const bar = document.getElementById(barId);
+    const hint = document.getElementById(hintId);
+
+    bar.className = 'strength-bar';
+    
+    if (val.length === 0) {
+      bar.style.width = '0%';
+      hint.textContent = 'Ingresa tu contraseña.';
+      hint.className = 'form-text text-muted';
+    } else if (val.length < 6) {
+      bar.classList.add('strength-weak');
+      hint.textContent = 'Contraseña débil (se recomiendan al menos 8 caracteres).';
+      hint.className = 'form-text text-danger';
+    } else if (val.length >= 6 && val.match(/(?=.*[a-z])(?=.*[0-9])/)) {
+      if (val.length >= 8 && val.match(/(?=.*[A-Z])(?=.*[!@#$%^&*])/)) {
+        bar.classList.add('strength-strong');
+        hint.textContent = 'Contraseña muy segura.';
+        hint.className = 'form-text text-success';
+      } else {
+        bar.classList.add('strength-medium');
+        hint.textContent = 'Contraseña aceptable (agrega mayúsculas o símbolos para mayor seguridad).';
+        hint.className = 'form-text text-warning';
+      }
+    } else {
+      bar.classList.add('strength-weak');
+      hint.textContent = 'Combina letras y números.';
+      hint.className = 'form-text text-danger';
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Portal del Paciente | MediPortal</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  
+  <!-- Plugins Needed for the Project -->
+  <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="plugins/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="plugins/animate.css">
+  
+  <!-- Stylesheet -->
+  <link href="css/style.css" rel="stylesheet">
+  <link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+  <style>
+    /* Estilos Header del Paciente */
+    .patient-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 15px 0;
+    }
+    
+    /* Módulo de Recordatorio Prominente */
+    .reminder-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f4fbfb 100%);
+      border: 2px solid #48bdc5;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 8px 20px rgba(72, 189, 197, 0.12);
+    }
+    .countdown-timer {
+      background: #48bdc5;
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 10px 15px;
+      display: inline-block;
+      font-weight: bold;
+    }
+
+    /* Tarjetas del Directorio Médico */
+    .doctor-card {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+    .doctor-card:hover {
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      border-color: #48bdc5;
+    }
+    
+    /* Grid de Horarios Disponibles */
+    .time-slot-btn {
+      border: 1px solid #48bdc5;
+      color: #48bdc5;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.85rem;
+      margin: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .time-slot-btn:hover, .time-slot-btn.selected {
+      background: #48bdc5;
+      color: #ffffff;
+    }
+  </style>
+</head>
+
+<body class="bg-gray">
+<div class="page-wrapper">
+
+  <!-- Encabezado Superior -->
+  <header class="patient-header shadow-sm mb-4">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-4 col-6">
+          <div class="logo">
+            <a href="index.html">
+              <img loading="lazy" class="img-fluid" src="images/logo.png" alt="logo" style="max-height: 45px;">
+            </a>
+          </div>
+        </div>
+        <div class="col-md-8 col-6 text-right d-flex align-items-center justify-content-end">
+          <div class="user-profile mr-3 text-right d-none d-md-block">
+            <h6 class="mb-0 font-weight-bold">María López</h6>
+            <small class="text-muted">Portal Pacientes</small>
+          </div>
+          <a href="login.html" class="btn btn-sm btn-outline-danger" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ==========================================
+         1. MÓDULO DE RECORDATORIOS Y NOTIFICACIONES
+         ========================================== -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="reminder-card">
+          <div class="row align-items-center">
+            
+            <div class="col-lg-7 col-md-12 mb-3 mb-lg-0">
+              <span class="badge badge-info px-3 py-1 mb-2"><i class="fas fa-bell mr-1"></i> Próxima Cita Programada</span>
+              <h3 class="font-weight-bold text-dark mb-1">Dr. Alejandro Morales</h3>
+              <p class="text-muted mb-2"><i class="fas fa-stethoscope text-primary mr-1"></i> Cardiología Clínica • Consultorio 302</p>
+              
+              <div class="d-flex align-items-center flex-wrap gap-3">
+                <span class="text-dark font-weight-bold mr-3"><i class="far fa-calendar-alt text-primary mr-1"></i> Hoy, 15 de Septiembre</span>
+                <span class="text-dark font-weight-bold"><i class="far fa-clock text-primary mr-1"></i> 10:00 AM</span>
+              </div>
+            </div>
+
+            <div class="col-lg-5 col-md-12 text-lg-right">
+              <!-- Cuenta Regresiva -->
+              <div class="countdown-timer mb-3">
+                <i class="fas fa-hourglass-half mr-1"></i> Falta: <span id="timer">07h 12m 30s</span>
+              </div>
+              
+              <!-- Botones para Compartir / Recordatorios -->
+              <div class="d-flex justify-content-lg-end flex-wrap gap-2">
+                <a href="https://wa.me/?text=Recordatorio%20de%20mi%20cita%20m%C3%A9dica%3A%20Dr.%20Alejandro%20Morales%20-%20Hoy%2010%3A00%20AM" target="_blank" class="btn btn-sm btn-success mr-1">
+                  <i class="fab fa-whatsapp mr-1"></i> WhatsApp
+                </a>
+                <button class="btn btn-sm btn-outline-primary mr-1" onclick="alert('Se ha reenviado el recordatorio a tu correo electrónico registrado.')">
+                  <i class="fas fa-envelope mr-1"></i> Correo
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="downloadICS()">
+                  <i class="fas fa-calendar-plus mr-1"></i> .ICS (Calendario)
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         2. BUSCADOR Y DIRECTORIO MÉDICO
+         ========================================== -->
+    <div class="section-title text-center mb-4">
+      <h3>Encuentra tu <span>Especialista</span></h3>
+      <p>Busca profesionales registrados y consulta su disponibilidad para agendar tu cita.</p>
+    </div>
+
+    <!-- Barra de Filtros de Búsqueda -->
+    <div class="card p-3 mb-4 shadow-sm border-0">
+      <div class="row">
+        <div class="col-md-4 mb-2 mb-md-0">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+            </div>
+            <input type="text" id="searchName" class="form-control border-left-0" placeholder="Nombre del doctor..." onkeyup="filterDoctors()">
+          </div>
+        </div>
+        <div class="col-md-4 mb-2 mb-md-0">
+          <select id="searchSpecialty" class="form-control" onchange="filterDoctors()">
+            <option value="">Todas las Especialidades</option>
+            <option value="Cardiología">Cardiología</option>
+            <option value="Pediatría">Pediatría</option>
+            <option value="Dermatología">Dermatología</option>
+            <option value="Psicología">Psicología</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <select id="searchAvailability" class="form-control" onchange="filterDoctors()">
+            <option value="">Disponibilidad</option>
+            <option value="hoy">Disponible Hoy</option>
+            <option value="semana">Esta Semana</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         3. DIRECTORIO Y AGENDAMIENTO DE CITAS
+         ========================================== -->
+    <div class="row" id="doctorGrid">
+
+      <!-- Doctor 1 -->
+      <div class="col-lg-6 mb-4 doctor-item" data-name="alejandro morales" data-specialty="Cardiología">
+        <div class="doctor-card">
+          <div class="row">
+            <div class="col-sm-4 text-center mb-3 mb-sm-0">
+              <img src="images/team/1.jpg" alt="Doctor" class="rounded-circle img-fluid mb-2" style="width: 90px; height: 90px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/90'">
+              <span class="badge badge-success d-block">Disponible Hoy</span>
+            </div>
+            <div class="col-sm-8">
+              <h5 class="font-weight-bold mb-1">Dr. Alejandro Morales</h5>
+              <p class="text-primary small mb-1">Cardiología Clínica</p>
+              <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt mr-1"></i> Centro Médico San José, Piso 3</p>
+              
+              <label class="font-weight-bold small d-block mb-1">Horarios Disponibles para Hoy:</label>
+              <div class="d-flex flex-wrap mb-3">
+                <button class="time-slot-btn" onclick="selectSlot(this, 'Dr. Alejandro Morales', '11:00 AM')">11:00 AM</button>
+                <button class="time-slot-btn" onclick="selectSlot(this, 'Dr. Alejandro Morales', '04:00 PM')">04:00 PM</button>
+                <button class="time-slot-btn" onclick="selectSlot(this, 'Dr. Alejandro Morales', '05:30 PM')">05:30 PM</button>
+              </div>
+
+              <button class="btn btn-style-one btn-sm w-100" onclick="confirmAppointment('Dr. Alejandro Morales')">Solicitar y Confirmar Cita</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor 2 -->
+      <div class="col-lg-6 mb-4 doctor-item" data-name="sofia ramirez" data-specialty="Dermatología">
+        <div class="doctor-card">
+          <div class="row">
+            <div class="col-sm-4 text-center mb-3 mb-sm-0">
+              <img src="images/team/2.jpg" alt="Doctor" class="rounded-circle img-fluid mb-2" style="width: 90px; height: 90px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/90'">
+              <span class="badge badge-info d-block">Disponible Mañana</span>
+            </div>
+            <div class="col-sm-8">
+              <h5 class="font-weight-bold mb-1">Dra. Sofía Ramírez</h5>
+              <p class="text-primary small mb-1">Dermatología Médica y Estética</p>
+              <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt mr-1"></i> Torre Médica Valle, Consultorio 501</p>
+              
+              <label class="font-weight-bold small d-block mb-1">Horarios Disponibles (16 Sept):</label>
+              <div class="d-flex flex-wrap mb-3">
+                <button class="time-slot-btn" onclick="selectSlot(this, 'Dra. Sofía Ramírez', '09:00 AM')">09:00 AM</button>
+                <button class="time-slot-btn" onclick="selectSlot(this, 'Dra. Sofía Ramírez', '10:30 AM')">10:30 AM</button>
+                <button class="time-slot-btn" onclick="selectSlot(this, 'Dra. Sofía Ramírez', '03:00 PM')">03:00 PM</button>
+              </div>
+
+              <button class="btn btn-style-one btn-sm w-100" onclick="confirmAppointment('Dra. Sofía Ramírez')">Solicitar y Confirmar Cita</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor 3 -->
+      <div class="col-lg-6 mb-4 doctor-item" data-name="carlos mendoza" data-specialty="Pediatría">
+        <div class="doctor-card">
+          <div class="row">
+            <div class="col-sm-4 text-center mb-3 mb-sm-0">
+              <img src="images/team/3.jpg" alt="Doctor" class="rounded-circle img-fluid mb-2" style="width: 90px; height: 90px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/90'">
+              <span class="badge badge-success d-block">Disponible Hoy</span>
+            </div>
+            <div class="col-sm-8">
+              <h5 class="font-weight-bold mb-1">Dr. Carlos Mendoza</h5>
+              <p class="text-primary small mb-1">Pediatría General</p>
+              <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt mr-1"></i> Hospital Infantil, Consultorio 102</p>
+              
+              <label class="font-weight-bold small d-block mb-1">Horarios Disponibles para Hoy:</label>
+              <div class="d-flex flex-wrap mb-3">
+                <button class="time-slot-btn" onclick="selectSlot(this, 'Dr. Carlos Mendoza', '01:00 PM')">01:00 PM</button>
+                <button class="time-slot-btn" onclick="selectSlot(this, 'Dr. Carlos Mendoza', '04:30 PM')">04:30 PM</button>
+              </div>
+
+              <button class="btn btn-style-one btn-sm w-100" onclick="confirmAppointment('Dr. Carlos Mendoza')">Solicitar y Confirmar Cita</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer Simplificado -->
+  <footer class="footer-bottom mt-5">
+    <div class="container text-center">
+      <p class="mb-0">&copy; 2026 MediPortal. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Scripts -->
+<script src="plugins/jquery.min.js"></script>
+<script src="plugins/bootstrap/bootstrap.min.js"></script>
+
+<script>
+  let selectedDoctor = null;
+  let selectedTime = null;
+
+  // Selección de Horarios
+  function selectSlot(element, doctorName, time) {
+    // Quitar selección previa en el mismo bloque
+    const parent = element.parentElement;
+    parent.querySelectorAll('.time-slot-btn').forEach(btn => btn.classList.remove('selected'));
+    
+    element.classList.add('selected');
+    selectedDoctor = doctorName;
+    selectedTime = time;
+  }
+
+  // Confirmación de Citas
+  function confirmAppointment(doctorName) {
+    if (!selectedTime || selectedDoctor !== doctorName) {
+      alert('Por favor selecciona un horario disponible antes de confirmar.');
+      return;
+    }
+    alert('¡Cita solicitada exitosamente con ' + doctorName + ' a las ' + selectedTime + '! Se ha generado tu recordatorio.');
+  }
+
+  // Filtros del Directorio
+  function filterDoctors() {
+    const nameVal = document.getElementById('searchName').value.toLowerCase();
+    const specVal = document.getElementById('searchSpecialty').value;
+    const items = document.querySelectorAll('.doctor-item');
+
+    items.forEach(item => {
+      const name = item.getAttribute('data-name');
+      const specialty = item.getAttribute('data-specialty');
+
+      const matchesName = name.includes(nameVal);
+      const matchesSpec = specVal === "" || specialty === specVal;
+
+      if (matchesName && matchesSpec) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  // Simulación de Descarga de Archivo ICS para Calendarios (Google, Apple, Outlook)
+  function downloadICS() {
+    const icsData = 
+      "BEGIN:VCALENDAR\n" +
+      "VERSION:2.0\n" +
+      "BEGIN:VEVENT\n" +
+      "SUMMARY:Cita Médica con Dr. Alejandro Morales\n" +
+      "DESCRIPTION:Consulta de Cardiología en Consultorio 302\n" +
+      "DTSTART:20260915T100000Z\n" +
+      "DTEND:20260915T103000Z\n" +
+      "END:VEVENT\n" +
+      "END:VCALENDAR";
+
+    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.setAttribute('download', 'cita-medica.ics');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+</script>
+
+</body>
+</html>
