@@ -184,6 +184,38 @@
     <!-- ==========================================
          3. DIRECTORIO Y AGENDAMIENTO DE CITAS
          ========================================== -->
+
+    <div class="doctor-card mb-4">
+  <h5>Datos para agendar tu cita</h5>
+
+  <div class="row">
+    <div class="col-md-6 form-group">
+      <label for="pacienteNombre">Nombre completo</label>
+      <input id="pacienteNombre" type="text"
+             class="form-control" maxlength="120">
+    </div>
+
+    <div class="col-md-6 form-group">
+      <label for="pacienteTelefono">Teléfono</label>
+      <input id="pacienteTelefono" type="tel"
+             class="form-control" maxlength="25">
+    </div>
+
+    <div class="col-md-6 form-group">
+      <label for="citaFecha">Fecha de la cita</label>
+      <input id="citaFecha" type="date" class="form-control">
+    </div>
+
+    <div class="col-12 form-group">
+      <label for="citaMotivo">Motivo de consulta</label>
+      <textarea id="citaMotivo" class="form-control"
+                maxlength="1000" rows="3"></textarea>
+    </div>
+  </div>
+
+  <div id="mensajeCita" role="status"></div>
+</div>
+
     <div class="row" id="doctorGrid">
 
       <!-- Doctor 1 -->
@@ -281,28 +313,161 @@
 <script src="plugins/bootstrap/bootstrap.min.js"></script>
 
 <script>
-  let selectedDoctor = null;
-  let selectedTime = null;
+ let selectedDoctor = null;
+let selectedTime = null;
+let medicosBD = [];
+let guardandoCita = false;
 
-  // Selección de Horarios
-  function selectSlot(element, doctorName, time) {
-    // Quitar selección previa en el mismo bloque
-    const parent = element.parentElement;
-    parent.querySelectorAll('.time-slot-btn').forEach(btn => btn.classList.remove('selected'));
-    
-    element.classList.add('selected');
-    selectedDoctor = doctorName;
-    selectedTime = time;
-  }
+function mensajeCita(texto, tipo) {
+  const mensaje = document.getElementById('mensajeCita');
+  mensaje.className = 'alert alert-' + tipo;
+  mensaje.textContent = texto;
+}
 
-  // Confirmación de Citas
-  function confirmAppointment(doctorName) {
-    if (!selectedTime || selectedDoctor !== doctorName) {
-      //alert('Por favor selecciona un horario disponible antes de confirmar.');
-      return;
+function normalizarNombre(nombre) {
+  return nombre.trim().toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+const botonesConfirmar = document.querySelectorAll(
+  '#doctorGrid button[onclick*="confirmAppointment"]'
+);
+
+function bloquearConfirmacion(bloquear) {
+  botonesConfirmar.forEach(boton => {
+    boton.disabled = bloquear;
+  });
+}
+
+bloquearConfirmacion(true);
+
+async function cargarMedicosBD() {
+  try {
+    const respuesta = await fetch('/api/medicos');
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok || !Array.isArray(datos)) {
+      throw new Error('No se pudieron cargar los médicos.');
     }
-    //alert('¡Cita solicitada exitosamente con ' + doctorName + ' a las ' + selectedTime + '! Se ha generado tu recordatorio.');
+
+    medicosBD = datos;
+    bloquearConfirmacion(false);
+  } catch (error) {
+    mensajeCita(
+      'No se pudo conectar con los médicos. Revisa la terminal del servidor y recarga.',
+      'danger'
+    );
   }
+}
+
+function selectSlot(element, doctorName, time) {
+  if (guardandoCita) return;
+
+  document.querySelectorAll('.time-slot-btn').forEach(boton => {
+    boton.classList.remove('selected');
+  });
+
+  element.classList.add('selected');
+  selectedDoctor = doctorName;
+  selectedTime = time;
+}
+
+function convertirHora(horaTexto) {
+  const resultado = horaTexto.match(/^(\d{1,2}):(\d{2}) (AM|PM)$/i);
+
+  if (!resultado) {
+    throw new Error('El horario seleccionado no es válido.');
+  }
+
+  let horas = Number(resultado[1]) % 12;
+
+  if (resultado[3].toUpperCase() === 'PM') {
+    horas += 12;
+  }
+
+  return String(horas).padStart(2, '0') + ':' + resultado[2];
+}
+
+async function confirmAppointment(doctorName) {
+  if (guardandoCita) return;
+
+  if (!selectedTime || selectedDoctor !== doctorName) {
+    mensajeCita('Primero selecciona un horario de este médico.', 'warning');
+    return;
+  }
+
+  const nombre = document.getElementById('pacienteNombre').value.trim();
+  const telefono = document.getElementById('pacienteTelefono').value.trim();
+  const fecha = document.getElementById('citaFecha').value;
+  const motivo = document.getElementById('citaMotivo').value.trim();
+
+  if (
+    nombre.length < 3 ||
+    telefono.length < 7 ||
+    !fecha ||
+    motivo.length < 3
+  ) {
+    mensajeCita(
+      'Completa el nombre, teléfono, fecha y motivo de consulta.',
+      'warning'
+    );
+    return;
+  }
+
+  const medico = medicosBD.find(item =>
+    normalizarNombre(item.nombre) === normalizarNombre(doctorName)
+  );
+
+  if (!medico) {
+    mensajeCita('Este médico no se encontró en la base de datos.', 'danger');
+    return;
+  }
+
+  guardandoCita = true;
+  bloquearConfirmacion(true);
+  mensajeCita('Guardando cita...', 'info');
+
+  try {
+    const respuesta = await fetch('/api/citas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre,
+        telefono,
+        medico_id: medico._id,
+        fecha,
+        hora: convertirHora(selectedTime),
+        motivo_consulta: motivo
+      })
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(datos.mensaje || 'No se pudo guardar la cita.');
+    }
+
+    mensajeCita(
+      '¡Cita guardada correctamente! Folio: ' + datos.cita_id,
+      'success'
+    );
+
+    selectedDoctor = null;
+    selectedTime = null;
+
+    document.querySelectorAll('.time-slot-btn').forEach(boton => {
+      boton.classList.remove('selected');
+    });
+  } catch (error) {
+    mensajeCita(error.message, 'danger');
+  } finally {
+    guardandoCita = false;
+    bloquearConfirmacion(false);
+  }
+}
+
+cargarMedicosBD();
 
   // Filtros del Directorio
   function filterDoctors() {
