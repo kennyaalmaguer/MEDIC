@@ -124,10 +124,10 @@
                   <span class="d-block font-weight-bold mb-2">Selecciona el tipo de perfil:</span>
                   <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     <label class="btn btn-outline-info active" onclick="switchRegisterMode('doctor')">
-                      <input type="radio" name="userRole" id="roleDoctor" checked> <i class="fas fa-user-md mr-1"></i> Modo Médico
+                      <input type="radio" name="userRole" id="roleDoctor" checked> <i class="fas fa-user-md mr-1"></i> Médico
                     </label>
                     <label class="btn btn-outline-info" onclick="switchRegisterMode('patient')">
-                      <input type="radio" name="userRole" id="rolePatient"> <i class="fas fa-user mr-1"></i> Modo Paciente
+                      <input type="radio" name="userRole" id="rolePatient"> <i class="fas fa-user mr-1"></i> Paciente
                     </label>
                   </div>
                 </div>
@@ -166,10 +166,10 @@
                   <span class="d-block font-weight-bold mb-2">Selecciona el tipo de perfil:</span>
                   <div class="btn-group btn-group-toggle" data-toggle="buttons">
                     <label class="btn btn-outline-info active" onclick="switchRegisterMode('doctor')">
-                      <input type="radio" name="userRole" id="roleDoctor" checked> <i class="fas fa-user-md mr-1"></i> Modo Médico
+                      <input type="radio" name="userRole" id="roleDoctor" checked> <i class="fas fa-user-md mr-1"></i> Médico
                     </label>
                     <label class="btn btn-outline-info" onclick="switchRegisterMode('patient')">
-                      <input type="radio" name="userRole" id="rolePatient"> <i class="fas fa-user mr-1"></i> Modo Paciente
+                      <input type="radio" name="userRole" id="rolePatient"> <i class="fas fa-user mr-1"></i> Paciente
                     </label>
                   </div>
                 </div>
@@ -201,10 +201,16 @@
                         <input type="tel" class="form-control" placeholder="+52 81 0000 0000" required>
                       </div>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                       <div class="form-group">
-                        <label class="font-weight-bold small">Cédula Médica / Especialidad</label>
-                        <input type="text" class="form-control" placeholder="Céd. 12345678 - Cardiología" required>
+                        <label class="font-weight-bold small">Cédula Médica</label>
+                        <input type="text" class="form-control" placeholder="Céd. 12345678" required>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold small">Especialidad</label>
+                        <input type="text" class="form-control" placeholder="Cardiología" required>
                       </div>
                     </div>
                     <div class="col-md-12">
