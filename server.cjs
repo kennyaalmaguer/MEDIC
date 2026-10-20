@@ -8,7 +8,7 @@ const path = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
 
 const app = express();
-const carpetaSitio = path.join(__dirname, 'MEDIC-front');
+const carpetaSitio = __dirname;
 const client = new MongoClient(process.env.MONGODB_URI);
 
 let db;
