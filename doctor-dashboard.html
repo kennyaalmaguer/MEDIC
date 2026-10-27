@@ -72,7 +72,7 @@
     .time-slot.past-slot {
       background-color: #f8f9fa;
       opacity: 0.6;
-      pointer-events: none; /* Desactivación automática */
+      pointer-events: none;
     }
     .time-slot.past-slot .badge-status {
       background-color: #6c757d;
@@ -86,12 +86,12 @@
       border-left: 4px solid #48bdc5;
     }
 
-    /* Layout Panel Dividido (Modo Consulta Activa) */
+    /* Layout Panel Dividido */
     .workspace-wrapper {
       transition: all 0.3s ease;
     }
     .consultation-panel {
-      display: none; /* Se activa al seleccionar una cita */
+      display: none;
       background: #ffffff;
       border: 1px solid #e0e0e0;
       border-radius: 8px;
@@ -100,7 +100,6 @@
       position: sticky;
       top: 20px;
     }
-    
     .patient-info-box {
       background: #f9f9f9;
       border-radius: 6px;
@@ -127,7 +126,7 @@
         <div class="col-md-8 col-6 text-right d-flex align-items-center justify-content-end">
           <div class="user-profile mr-3 text-right d-none d-md-block">
             <h6 class="mb-0 font-weight-bold">Dr. Alejandro Morales</h6>
-            <small class="text-muted">Cardiología Clinica</small>
+            <small class="text-muted">Cardiología Clínica</small>
           </div>
           <img src="images/team/1.jpg" alt="Doctor Avatar" class="rounded-circle mr-3" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/40'">
           <a href="login.html" class="btn btn-sm btn-outline-danger" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
@@ -140,8 +139,6 @@
     
     <!-- Métrica Semanal y Control de Agenda Día -->
     <div class="row mb-4 align-items-center">
-      
-      <!-- Selector de Fecha / Día -->
       <div class="col-lg-7 col-md-6 mb-3 mb-md-0">
         <div class="d-flex align-items-center flex-wrap gap-2">
           <h3 class="mb-0 font-weight-bold mr-3">Agenda del Día</h3>
@@ -154,7 +151,6 @@
         </div>
       </div>
 
-      <!-- Métrica Semanal Superior -->
       <div class="col-lg-5 col-md-6">
         <div class="metric-card">
           <div>
@@ -166,13 +162,12 @@
           </div>
         </div>
       </div>
-
     </div>
 
-    <!-- Workspace Principal (Soporta Vista Pantalla Entera y Split Screen) -->
+    <!-- Workspace Principal -->
     <div class="row workspace-wrapper">
       
-      <!-- Columna Principal: Time-Grid / Calendario Diario -->
+      <!-- Columna Principal: Calendario Diario -->
       <div class="col-lg-12" id="calendarColumn">
         <div class="schedule-container shadow-sm">
           
@@ -181,10 +176,9 @@
             <span class="badge badge-info px-3 py-2">Modo Consulta Activo</span>
           </div>
 
-          <!-- Time Grid / Bloques Horarios -->
+          <!-- Time Grid -->
           <div class="time-grid-wrapper">
 
-            <!-- Bloque 08:00 AM (Pasado / Bloqueado Automático) -->
             <div class="time-slot past-slot">
               <div class="time-label">08:00 AM</div>
               <div class="slot-content">
@@ -198,7 +192,6 @@
               </div>
             </div>
 
-            <!-- Bloque 09:00 AM (Pasado / Bloqueado Automático) -->
             <div class="time-slot past-slot">
               <div class="time-label">09:00 AM</div>
               <div class="slot-content">
@@ -212,7 +205,7 @@
               </div>
             </div>
 
-            <!-- Bloque 10:00 AM (Pendiente / Activa) -->
+            <!-- Bloque 10:00 AM (Activa) -->
             <div class="time-slot active-slot" id="slot-1">
               <div class="time-label">10:00 AM</div>
               <div class="slot-content">
@@ -228,7 +221,7 @@
               </div>
             </div>
 
-            <!-- Bloque 11:00 AM (Pendiente / Activa) -->
+            <!-- Bloque 11:00 AM (Activa) -->
             <div class="time-slot active-slot" id="slot-2">
               <div class="time-label">11:00 AM</div>
               <div class="slot-content">
@@ -244,7 +237,6 @@
               </div>
             </div>
 
-            <!-- Bloque 12:00 PM (Disponible / Libre) -->
             <div class="time-slot active-slot">
               <div class="time-label">12:00 PM</div>
               <div class="slot-content bg-light">
@@ -256,7 +248,7 @@
         </div>
       </div>
 
-      <!-- Panel Dividido: Sección Izquierda/Inferior (Modo Consulta Activa) -->
+      <!-- Panel Dividido (Consulta en Curso) -->
       <div class="col-lg-6" id="consultationColumn">
         <div class="consultation-panel" id="consultationPanel">
           
@@ -267,7 +259,6 @@
             </button>
           </div>
 
-          <!-- Información del Paciente (Sección Izquierda del Split) -->
           <div class="patient-info-box">
             <div class="d-flex justify-content-between align-items-start">
               <div>
@@ -289,16 +280,16 @@
             </div>
           </div>
 
-          <!-- Nota Médica e Interacción (Sección Inferior/Derecha) -->
+          <!-- Formulario conectado a la función finishConsultation -->
           <form onsubmit="finishConsultation(event)">
             <div class="form-group mb-2">
               <label class="font-weight-bold small"><i class="fas fa-edit mr-1"></i> Observaciones y Evolución Clínica</label>
-              <textarea class="form-control" rows="4" placeholder="Escribe aquí los síntomas, hallazgos del examen físico y observaciones..." required></textarea>
+              <textarea class="form-control" id="observacionesInput" rows="4" placeholder="Escribe aquí los síntomas, hallazgos del examen físico y observaciones..." required></textarea>
             </div>
 
             <div class="form-group mb-3">
               <label class="font-weight-bold small"><i class="fas fa-prescription mr-1"></i> Prescripción / Plan Médico</label>
-              <textarea class="form-control" rows="3" placeholder="Medicamentos, dosis, indicaciones y estudios a solicitar..."></textarea>
+              <textarea class="form-control" id="prescripcionInput" rows="3" placeholder="Medicamentos, dosis, indicaciones y estudios a solicitar..." required></textarea>
             </div>
 
             <div class="d-flex gap-2">
@@ -313,7 +304,6 @@
     </div>
   </div>
 
-  <!-- Footer Simplificado -->
   <footer class="footer-bottom mt-5">
     <div class="container text-center">
       <p class="mb-0">&copy; 2026 MediPortal. Todos los derechos reservados.</p>
@@ -324,65 +314,8 @@
 
 <script src="plugins/jquery.min.js"></script>
 <script src="plugins/bootstrap/bootstrap.min.js"></script>
-
-<script>
-  let activeSlotId = null;
-
-  // Abrir panel dividido (Split Screen) al presionar una cita activa
-  function openConsultation(name, meta, exp, history, reason, slotId) {
-    // Actualizar datos del paciente
-    document.getElementById('patientName').textContent = name;
-    document.getElementById('patientMeta').textContent = meta + ' | Expediente: ' + exp;
-    document.getElementById('patientHistory').textContent = history;
-    document.getElementById('patientReason').textContent = reason;
-
-    // Resaltar renglón seleccionado
-    if (activeSlotId) {
-      document.getElementById(activeSlotId).classList.remove('selected-slot');
-    }
-    activeSlotId = slotId;
-    document.getElementById(slotId).classList.add('selected-slot');
-
-    // Cambiar layout a Pantalla Dividida (50% / 50%)
-    document.getElementById('calendarColumn').className = 'col-lg-6';
-    document.getElementById('consultationColumn').style.display = 'block';
-    document.getElementById('consultationPanel').style.display = 'block';
-  }
-
-  // Cerrar panel dividido y regresar a Fullscreen
-  function closeConsultation() {
-    if (activeSlotId) {
-      document.getElementById(activeSlotId).classList.remove('selected-slot');
-    }
-    document.getElementById('calendarColumn').className = 'col-lg-12';
-    document.getElementById('consultationPanel').style.display = 'none';
-  }
-
-  // Finalizar consulta y actualizar contador
-  function finishConsultation(e) {
-    e.preventDefault();
-    //alert('Consulta registrada y expediente actualizado correctamente.');
-    
-    // Incrementar métrica rápida
-    const counterEl = document.getElementById('weeklyCounter');
-    let currentVal = parseInt(counterEl.textContent);
-    counterEl.childNodes[0].textContent = (currentVal + 1) + ' ';
-
-    closeConsultation();
-  }
-
-  // Cambiar fecha
-  function filterDate(val) {
-    document.getElementById('selectedDateTitle').innerHTML = '<i class="far fa-calendar-alt mr-2"></i> Citas para: ' + val;
-    closeConsultation();
-  }
-
-  // Regresar a HOY
-  function resetToday() {
-    document.getElementById('agendaDate').value = '2026-09-15';
-    filterDate('2026-09-15');
-  }
-</script>
+<!-- Enlazamos tu archivo JavaScript separado dentro de la carpeta js -->
+<script src="js/consultaApp.js"></script>
 
 </body>
 </html>
