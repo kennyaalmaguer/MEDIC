@@ -13,6 +13,7 @@
   
   <!-- Stylesheet -->
   <link href="css/style.css" rel="stylesheet">
+  <link href="css/alertas.css" rel="stylesheet">
   <link rel="icon" href="images/favicon.png" type="image/x-icon">
 
   <style>
@@ -297,7 +298,8 @@
         </div>
         <div class="modal-body">
           <p class="small text-muted mb-3">Ingresa tu correo electrónico asociado a la cuenta y te enviaremos un enlace seguro para restablecer tu contraseña.</p>
-          <form onsubmit="event.preventDefault(); alert('Se ha enviado un enlace de recuperación a tu correo.'); $('#modalForgot').modal('hide');">
+                    <form onsubmit="event.preventDefault(); $('#modalForgot').modal('hide'); mostrarAlerta('Se ha enviado un enlace de recuperación a tu correo.', 'success');">
+
             <div class="form-group">
               <label class="font-weight-bold small">Correo Electrónico</label>
               <input type="email" class="form-control" placeholder="correo@ejemplo.com" required>
@@ -369,6 +371,9 @@
     }
   }
 </script>
+<script src="js/alertas.js"></script>
+<script src="js/paciente.js"></script>
+<script src="js/doctor.js"></script>
 
 </body>
 </html>
