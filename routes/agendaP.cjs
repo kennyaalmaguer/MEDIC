@@ -1,3 +1,4 @@
+// routes/agendaP.cjs
 const express = require('express');
 const router = express.Router();
 const { ObjectId } = require('mongodb');
@@ -11,7 +12,7 @@ function textoValido(valor, minimo, maximo) {
 
 module.exports = function(db, client) {
 
-  // Obtener los médicos sin exponer contraseñas
+  // Obtener los médicos activos
   router.get('/medicos', async (req, res) => {
     try {
       const medicos = await db.collection('usuario')
@@ -20,26 +21,27 @@ module.exports = function(db, client) {
           { projection: { nombre: 1, especialidad: 1 } }
         )
         .toArray();
-
       res.json(medicos);
     } catch (error) {
       console.error(error.message);
-      res.status(500).json({
-        mensaje: 'No se pudieron cargar los médicos.'
-      });
+      res.status(500).json({ mensaje: 'No se pudieron cargar los médicos.' });
     }
   });
 
-  // Guardar una cita
+  // Obtener citas desde la colección 'agenda'
+  router.get('/citas', async (req, res) => {
+    try {
+      const citas = await db.collection('agenda').find({}).toArray();
+      res.json(citas);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ mensaje: 'No se pudieron cargar las citas.' });
+    }
+  });
+
+  // Guardar una cita en la colección 'agenda'
   router.post('/citas', async (req, res) => {
-    const {
-      nombre,
-      telefono,
-      medico_id,
-      fecha,
-      hora,
-      motivo_consulta
-    } = req.body || {};
+    const { nombre, telefono, medico_id, fecha, hora, motivo_consulta } = req.body || {};
 
     if (
       !textoValido(nombre, 3, 120) ||
@@ -52,22 +54,17 @@ module.exports = function(db, client) {
       !/^\d{4}-\d{2}-\d{2}$/.test(fecha) ||
       !['09:00', '10:30', '11:00', '13:00', '15:00', '16:00', '16:30', '17:30'].includes(hora)
     ) {
-      return res.status(400).json({
-        mensaje: 'Completa correctamente todos los campos.'
-      });
+      return res.status(400).json({ mensaje: 'Completa correctamente todos los campos.' });
     }
 
     const fecha_hora = new Date(`${fecha}T${hora}:00-06:00`);
 
     if (
       Number.isNaN(fecha_hora.getTime()) ||
-      new Date(fecha_hora.getTime() - 6 * 3600000)
-        .toISOString().slice(0, 10) !== fecha ||
+      new Date(fecha_hora.getTime() - 6 * 3600000).toISOString().slice(0, 10) !== fecha ||
       fecha_hora <= new Date()
     ) {
-      return res.status(400).json({
-        mensaje: 'Selecciona una fecha y hora futuras y válidas.'
-      });
+      return res.status(400).json({ mensaje: 'Selecciona una fecha y hora futuras y válidas.' });
     }
 
     const session = client.startSession();
@@ -101,10 +98,15 @@ module.exports = function(db, client) {
           creado_en: ahora
         }, { session });
 
-        await db.collection('citas').insertOne({
+        // Guardado optimizado utilizando la colección 'agenda'
+        await db.collection('agenda').insertOne({
           _id: citaId,
           paciente_id: pacienteId,
           medico_id: medicoId,
+          medico_nombre: medico.nombre,
+          especialidad: medico.especialidad,
+          fecha,
+          hora,
           fecha_hora,
           motivo_consulta: motivo_consulta.trim(),
           estado: 'pendiente',
@@ -120,15 +122,11 @@ module.exports = function(db, client) {
       console.error(error.message);
 
       if (error.code === 11000) {
-        return res.status(409).json({
-          mensaje: 'Ese horario ya está ocupado. Elige otro.'
-        });
+        return res.status(409).json({ mensaje: 'Ese horario ya está ocupado. Elige otro.' });
       }
 
       res.status(error.status || 500).json({
-        mensaje: error.status
-          ? error.message
-          : 'No se pudo guardar la cita.'
+        mensaje: error.status ? error.message : 'No se pudo guardar la cita.'
       });
     } finally {
       await session.endSession();

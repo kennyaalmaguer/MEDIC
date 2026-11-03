@@ -1,31 +1,28 @@
-require('dotenv').config();
-
-//const dns = require('node:dns');
-//dns.setServers(['8.8.8.8', '8.8.4.4']);
-
-
+// server.cjs
 const express = require('express');
 const path = require('path');
 const { MongoClient } = require('mongodb');
-const mongoose = require('mongoose'); // Importante para tus modelos de Mongoose
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const app = express();
+const port = process.env.PORT || 3000;
 const carpetaSitio = __dirname;
-const client = new MongoClient(process.env.MONGODB_URI, { family: 4 });
 
 let db;
 
-// 1. ESTO ES VITAL: Permite que el servidor procese datos JSON
+// 1. Permite que el servidor procese datos JSON
 app.use(express.json({ limit: '16kb' }));
 
 // Configuración de archivos estáticos
 app.use(express.static(carpetaSitio));
-for (const carpeta of ['css', 'images', 'image', 'js', 'plugins']) {
-  app.use(
-    '/' + carpeta,
-    express.static(path.join(carpetaSitio, carpeta))
-  );
-}
+['css', 'images', 'image', 'js', 'plugins'].forEach(carpeta => {
+  app.use('/' + carpeta, express.static(path.join(carpetaSitio, carpeta)));
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(carpetaSitio, 'login.html')); 
+});
 
 // Ruta para el dashboard del paciente
 app.get('/patient-dashboard.html', (req, res) => {
@@ -42,77 +39,33 @@ app.get('/api/estado', async (req, res) => {
   }
 });
 
-// 2. TUS RUTAS (ENDPOINTS) CONECTADAS
+// 3. TUS RUTAS (ENDPOINTS) CONECTADAS
 app.use('/api/doctores', require('./routes/Rdoctor.cjs'));
 app.use('/api/pacientes', require('./routes/Rpaciente.cjs'));
 
 // Función para inicializar base de datos y servidor
 async function iniciar() {
+  // Conexión única y limpia con Mongoose para tus modelos
   await mongoose.connect(process.env.MONGODB_URI, {
     dbName: process.env.MONGODB_DB || 'medic',
-    family: 4
+    family: 4,
+    tlsAllowInvalidCertificates: true
   });
-  // Conexión con MongoClient nativo para las transacciones y agenda
+
+  // Conexión con MongoClient nativo para las transacciones y agendaP.cjs
+  const client = new MongoClient(process.env.MONGODB_URI, { 
+    family: 4, 
+    tlsAllowInvalidCertificates: true 
+  });
   await client.connect();
   db = client.db(process.env.MONGODB_DB || 'medic');
 
-  // Conexión paralela con Mongoose (para que funcionen tus modelos .cjs de doctores y pacientes)
-  await mongoose.connect(process.env.MONGODB_URI, {
-    dbName: process.env.MONGODB_DB || 'medic'
-  });
-
-  // Montar las rutas de agenda pasando la base de datos
+  // Montar las rutas de agenda pasando la base de datos y el cliente nativo
   app.use('/api', require('./routes/agendaP.cjs')(db, client));
 
-  // Crear índices necesarios para citas
-  await db.collection('citas').createIndex(
-    { medico_id: 1, fecha_hora: 1 },
-    {
-      unique: true,
-      partialFilterExpression: {
-        estado: { $in: ['pendiente', 'confirmada', 'en_atencion'] }
-      }
-    }
-  );
-
-  // Médicos de demostración iniciales
-  const medicosDemo = [
-    {
-      nombre: 'Dr. Alejandro Morales',
-      especialidad: 'Cardiología',
-      email: 'alejandro@medic.example'
-    },
-    {
-      nombre: 'Dra. Sofía Ramírez',
-      especialidad: 'Dermatología',
-      email: 'sofia@medic.example'
-    },
-    {
-      nombre: 'Dr. Carlos Mendoza',
-      especialidad: 'Pediatría',
-      email: 'carlos@medic.example'
-    }
-  ];
-
-  for (const medico of medicosDemo) {
-    await db.collection('usuario').updateOne(
-      { email: medico.email },
-      {
-        $setOnInsert: {
-          ...medico,
-          rol: 'medico',
-          activo: true,
-          telefono: '',
-          creado_en: new Date()
-        }
-      },
-      { upsert: true }
-    );
-  }
-
-  app.listen(3000, '127.0.0.1', () => {
+  app.listen(port, '127.0.0.1', () => {
     console.log('Conexión con MongoDB correcta');
-    console.log('Servidor: http://localhost:3000');
+    console.log(`Servidor corriendo en: http://localhost:${port}`);
   });
 }
 
