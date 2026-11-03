@@ -1,20 +1,21 @@
-// routes/Rpaciente.cjs
-// Enrutador backend para gestionar el registro e inicio de sesión de pacientes en MongoDB Atlas
 const express = require('express');
 const router = express.Router();
 const Paciente = require('../models/paciente.cjs');
 
-// ENDPOINT POST: http://localhost:3000/api/pacientes/registro
+
 router.post('/registro', async (req, res) => {
     try {
         const { nombre, usuario, email, telefono, pass } = req.body;
 
-        // Validación básica de campos obligatorios
         if (!nombre || !usuario || !email || !pass) {
             return res.status(400).json({ success: false, message: 'Faltan campos obligatorios por llenar.' });
         }
 
+    
+        const expedienteUnico = `EXP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
         const nuevoPaciente = new Paciente({
+            expediente: expedienteUnico,
             nombre,
             usuario,
             email,
@@ -26,19 +27,20 @@ router.post('/registro', async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: 'Paciente registrado correctamente en la base de datos'
+            message: 'Paciente registrado correctamente en la base de datos',
+            expediente: expedienteUnico
         });
 
     } catch (error) {
         console.error('Error al registrar paciente:', error);
         if (error.code === 11000) {
-            return res.status(400).json({ success: false, message: 'El correo o nombre de usuario ya se encuentran registrados.' });
+            return res.status(400).json({ success: false, message: 'El correo, el usuario o el expediente ya se encuentran registrados.' });
         }
         res.status(500).json({ success: false, message: 'Error interno del servidor al procesar el registro.' });
     }
 });
 
-// ENDPOINT POST: http://localhost:3000/api/pacientes/login
+
 router.post('/login', async (req, res) => {
     try {
         const { identificador, pass } = req.body;
@@ -47,7 +49,6 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Por favor, ingresa tu usuario/correo y contraseña.' });
         }
 
-        // Buscar al paciente por email o por usuario
         const paciente = await Paciente.findOne({
             $or: [{ email: identificador }, { usuario: identificador }]
         });

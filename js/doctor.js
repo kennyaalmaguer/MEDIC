@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+
     const formRegister = document.getElementById('formRegisterDoctor');
 
     if (formRegister) {
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             if (payload.pass.length < 8) {
-                alert('La contraseña debe contener al menos 8 caracteres.');
+                mostrarAlerta('La contraseña debe contener al menos 8 caracteres.', 'error');
                 return;
             }
 
@@ -31,14 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('¡Registro de médico exitoso!');
-                    window.location.href = formRegister.getAttribute('action');
+                    mostrarAlerta('¡Registro de médico exitoso!', 'success');
+                    setTimeout(() => {
+                        window.location.href = formRegister.getAttribute('action');
+                    }, 1500);
                 } else {
-                    alert('No se pudo completar el registro: ' + (data.message || 'Intente de nuevo.'));
+                    mostrarAlerta('No se pudo completar el registro: ' + (data.message || 'Intente de nuevo.'), 'error');
                 }
             } catch (error) {
                 console.error('Error de red al conectar con el servidor:', error);
-                alert('Error de conexión con el servidor backend.');
+                mostrarAlerta('Error de conexión con el servidor backend.', 'error');
             }
         });
     }
@@ -50,14 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            
             const identificadorInput = loginForm.querySelector('input[type="text"], input[type="email"]');
             const passInput = loginForm.querySelector('input[type="password"]');
 
             const identificador = identificadorInput ? identificadorInput.value.trim() : '';
             const pass = passInput ? passInput.value.trim() : '';
 
-            
             const isDoctorRole = document.getElementById('roleDoctor').checked;
             const endpoint = isDoctorRole 
                 ? 'http://localhost:3000/api/doctores/login' 
@@ -75,18 +76,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('¡Bienvenido, ' + data.usuario.nombre + '!');
-                    window.location.href = isDoctorRole ? 'doctor-dashboard.html' : 'patient-dashboard.html';
+                    mostrarAlerta('¡Bienvenido, ' + data.usuario.nombre + '!', 'success');
+                    setTimeout(() => {
+                        window.location.href = isDoctorRole ? 'doctor-dashboard.html' : 'patient-dashboard.html';
+                    }, 1500);
                 } else {
-                    alert('Error al iniciar sesión: ' + (data.message || 'Credenciales inválidas.'));
+                    mostrarAlerta('Error al iniciar sesión: ' + (data.message || 'Credenciales inválidas.'), 'error');
                 }
             } catch (error) {
                 console.error('Error de red en el login:', error);
-                alert('No se pudo conectar con el servidor para iniciar sesión.');
+                mostrarAlerta('No se pudo conectar con el servidor para iniciar sesión.', 'error');
             }
         });
     }
 });
+
+
+function mostrarAlerta(mensaje, tipo = 'success') {
+    let container = document.getElementById('customAlertContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'customAlertContainer';
+        container.className = 'custom-alert-container';
+        document.body.appendChild(container);
+    }
+
+    const alertBox = document.createElement('div');
+    alertBox.className = `custom-alert-box ${tipo}`;
+    alertBox.innerHTML = `<p class="custom-alert-text">${mensaje}</p>`;
+
+    container.appendChild(alertBox);
+
+    setTimeout(() => {
+        alertBox.style.opacity = '0';
+        setTimeout(() => alertBox.remove(), 300);
+    }, 4000);
+}
 
 
 function checkPasswordStrength(passwordInputId, barId, hintId) {
