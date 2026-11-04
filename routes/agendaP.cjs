@@ -31,6 +31,21 @@ module.exports = function(db, client) {
     }
   });
 
+  // Citas ocupadas para el calendario del paciente (sin datos de otros pacientes)
+  router.get('/citas', async (req, res) => {
+    try {
+      const citas = await db.collection('agenda').find(
+        {},
+        { projection: { medico_id: 1, medico_nombre: 1, especialidad: 1, fecha: 1, hora: 1, estado: 1 } }
+      ).toArray();
+      res.json(citas);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ mensaje: 'No se pudieron cargar las citas.' });
+    }
+  });
+
+
   // Guardar una cita
  router.post('/citas', async (req, res) => {
   const { paciente_id, medico_id, fecha, hora, motivo_consulta } = req.body || {};

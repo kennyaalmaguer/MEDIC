@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 
 const pacienteSchema = new mongoose.Schema({
-  expediente: { type: String, unique: true }, 
+  expediente: {
+  type: String,
+  unique: true,
+  default: () => `EXP-${new mongoose.Types.ObjectId().toHexString().toUpperCase()}`
+},
   nombre: { type: String, required: true },
   usuario: { type: String, required: true, unique: true }, 
   email: { type: String, required: true, unique: true },
