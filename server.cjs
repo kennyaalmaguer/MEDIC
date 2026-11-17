@@ -45,14 +45,14 @@ app.use('/api/pacientes', require('./routes/Rpaciente.cjs'));
 
 // Función para inicializar base de datos y servidor
 async function iniciar() {
-  // Conexión única y limpia con Mongoose para tus modelos
+  // Conexión con Mongoose para tus modelos
   await mongoose.connect(process.env.MONGODB_URI, {
     dbName: process.env.MONGODB_DB || 'medic',
     family: 4,
     tlsAllowInvalidCertificates: true
   });
 
-  // Conexión con MongoClient nativo para las transacciones y agendaP.cjs
+  // Conexión con MongoClient nativo para transacciones y agendaP.cjs
   const client = new MongoClient(process.env.MONGODB_URI, { 
     family: 4, 
     tlsAllowInvalidCertificates: true 
