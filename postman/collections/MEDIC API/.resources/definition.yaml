@@ -1,0 +1,22 @@
+$kind: collection
+description: postman medic
+variables:
+  baseUrl: http://localhost:3000
+  runId: ""
+  fechaCita: ""
+  horaCita: ""
+  paciente_id: ""
+  medico_id: ""
+  cita_id: ""
+scripts:
+  - type: http:beforeRequest
+    code: |-
+      if (!pm.collectionVariables.get('runId')) {
+        var horas = ['09:00', '10:00', '10:30', '11:00', '13:00', '15:00', '16:00', '16:30', '17:30'];
+        var dias = 30 + Math.floor(Math.random() * 700);
+        var f = new Date(Date.now() + dias * 86400000 - 6 * 3600000).toISOString().slice(0, 10);
+        pm.collectionVariables.set('runId', Date.now().toString());
+        pm.collectionVariables.set('fechaCita', f);
+        pm.collectionVariables.set('horaCita', horas[Math.floor(Math.random() * horas.length)]);
+      }
+    language: text/javascript

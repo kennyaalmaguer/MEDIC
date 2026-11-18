@@ -1,0 +1,22 @@
+$kind: http-request
+url: http://localhost:3000/api/pacientes/registro
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Paciente Prueba {{runId}}",
+      "usuario": "pac_{{runId}}",
+      "email": "pac_{{runId}}@medic.test",
+      "telefono": "5587654321",
+      "pass": "Test1234!"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 400', function () { pm.response.to.have.status(400); });
+      pm.test('Mensaje: ya se encuentran registrados', function () { pm.expect(pm.response.json().message).to.include('ya se encuentran registrados'); });
+    language: text/javascript
+order: 2000

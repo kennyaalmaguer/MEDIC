@@ -1,0 +1,17 @@
+$kind: http-request
+description: El login de doctor no devuelve _id, por eso el medico_id se obtiene de este listado buscando por nombre.
+url: http://localhost:3000/api/medicos
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', function () { pm.response.to.have.status(200); });
+      var lista = pm.response.json();
+      pm.test('Es un arreglo', function () { pm.expect(lista).to.be.an('array'); });
+      var nombre = 'Dr. Prueba ' + pm.collectionVariables.get('runId');
+      var m = lista.filter(function (x) { return x.nombre === nombre; })[0];
+      pm.test('Aparece el médico recién registrado', function () { pm.expect(!!m).to.be.true; });
+      pm.test('No expone contraseñas', function () { pm.expect(lista.every(function (x) { return !('pass' in x); })).to.be.true; });
+      if (m) { pm.collectionVariables.set('medico_id', m._id); }
+    language: text/javascript
+order: 1000

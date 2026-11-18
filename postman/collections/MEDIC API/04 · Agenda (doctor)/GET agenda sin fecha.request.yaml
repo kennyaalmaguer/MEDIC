@@ -1,0 +1,10 @@
+$kind: http-request
+url: http://localhost:3000/api/agenda
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 400', function () { pm.response.to.have.status(400); });
+      pm.test('Mensaje: Fecha no válida', function () { pm.expect(pm.response.json().mensaje).to.include('Fecha no válida'); });
+    language: text/javascript
+order: 3000

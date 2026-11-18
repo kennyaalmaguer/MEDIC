@@ -1,0 +1,12 @@
+$kind: http-request
+url: http://localhost:3000/api/citas
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', function () { pm.response.to.have.status(200); });
+      var c = pm.response.json().filter(function (x) { return x._id === pm.collectionVariables.get('cita_id'); })[0];
+      pm.test('La cita aparece y está pendiente', function () { pm.expect(!!c).to.be.true; pm.expect(c.estado).to.eql('pendiente'); });
+      pm.test('No expone paciente ni motivo', function () { pm.expect('paciente_id' in c).to.be.false; pm.expect('motivo_consulta' in c).to.be.false; });
+    language: text/javascript
+order: 12000

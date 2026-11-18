@@ -1,0 +1,16 @@
+$kind: http-request
+url: http://localhost:3000/api/agenda?fecha={{fechaCita}}&medico_id={{medico_id}}
+method: GET
+queryParams:
+  fecha: "{{fechaCita}}"
+  medico_id: "{{medico_id}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', function () { pm.response.to.have.status(200); });
+      var c = pm.response.json().filter(function (x) { return x._id === pm.collectionVariables.get('cita_id'); })[0];
+      pm.test('Incluye la cita creada', function () { pm.expect(!!c).to.be.true; });
+      pm.test('Trae los datos del paciente', function () { pm.expect(c.paciente.nombre).to.eql('Paciente Prueba ' + pm.collectionVariables.get('runId')); });
+      pm.test('No filtra pass, usuario ni email del paciente', function () { pm.expect('pass' in c.paciente).to.be.false; pm.expect('usuario' in c.paciente).to.be.false; pm.expect('email' in c.paciente).to.be.false; });
+    language: text/javascript
+order: 1000

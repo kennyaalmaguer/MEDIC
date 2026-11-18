@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{baseUrl}}/api/doctores/registro"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Dr. Prueba {{runId}}",
+      "usuario": "doc_{{runId}}",
+      "email": "doc_{{runId}}@medic.test",
+      "telefono": "5512345678",
+      "cedula": "CED{{runId}}",
+      "especialidad": "Cardiología",
+      "pass": "Test1234!"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 201', function () { pm.response.to.have.status(201); });
+      pm.test('success = true', function () { pm.expect(pm.response.json().success).to.be.true; });
+    language: text/javascript
+order: 1000

@@ -1,0 +1,23 @@
+$kind: http-request
+description: 'Depende de que la colección "agenda" tenga un índice único (medico_id + fecha_hora). El código maneja el error 11000, pero el modelo de Mongoose no declara el índice: si responde 201 aquí, falta crearlo en la base de datos.'
+url: http://localhost:3000/api/citas
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "paciente_id": "{{paciente_id}}",
+      "medico_id": "{{medico_id}}",
+      "fecha": "{{fechaCita}}",
+      "hora": "{{horaCita}}",
+      "motivo_consulta": "Dolor de cabeza persistente (prueba Postman)"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 409', function () { pm.response.to.have.status(409); });
+      pm.test('Mensaje: ya está ocupado', function () { pm.expect(pm.response.json().mensaje).to.include('ya está ocupado'); });
+    language: text/javascript
+order: 4000

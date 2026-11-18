@@ -1,0 +1,24 @@
+$kind: http-request
+url: http://localhost:3000/api/citas
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "paciente_id": "{{paciente_id}}",
+      "medico_id": "{{medico_id}}",
+      "fecha": "{{fechaCita}}",
+      "hora": "{{horaCita}}",
+      "motivo_consulta": "Dolor de cabeza persistente (prueba Postman)"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 201', function () { pm.response.to.have.status(201); });
+      var j = pm.response.json();
+      pm.test('Devuelve cita_id válido', function () { pm.expect(/^[a-f0-9]{24}$/i.test(j.cita_id)).to.be.true; });
+      pm.collectionVariables.set('cita_id', j.cita_id);
+    language: text/javascript
+order: 3000

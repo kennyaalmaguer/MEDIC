@@ -1,0 +1,1768 @@
+{
+  "info": {
+    "name": "MEDIC API",
+    "description": "Pruebas de la API de MEDIC (rama dashboard-doctor-y-paciente). Ejecuta la colección completa en orden con el Collection Runner: cada request depende de los datos que crean los anteriores. Usa una base de datos de pruebas: la API no tiene endpoints para borrar y cada corrida deja un doctor y un paciente \"Prueba\".",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "runId",
+      "value": ""
+    },
+    {
+      "key": "fechaCita",
+      "value": ""
+    },
+    {
+      "key": "horaCita",
+      "value": ""
+    },
+    {
+      "key": "paciente_id",
+      "value": ""
+    },
+    {
+      "key": "medico_id",
+      "value": ""
+    },
+    {
+      "key": "cita_id",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('runId')) {",
+          "  var horas = ['09:00', '10:00', '10:30', '11:00', '13:00', '15:00', '16:00', '16:30', '17:30'];",
+          "  var dias = 30 + Math.floor(Math.random() * 700);",
+          "  var f = new Date(Date.now() + dias * 86400000 - 6 * 3600000).toISOString().slice(0, 10);",
+          "  pm.collectionVariables.set('runId', Date.now().toString());",
+          "  pm.collectionVariables.set('fechaCita', f);",
+          "  pm.collectionVariables.set('horaCita', horas[Math.floor(Math.random() * horas.length)]);",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "00 · Estado",
+      "item": [
+        {
+          "name": "GET /api/estado",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Nueva corrida: genera datos únicos y limpia IDs de la corrida anterior",
+                  "var horas = ['09:00', '10:00', '10:30', '11:00', '13:00', '15:00', '16:00', '16:30', '17:30'];",
+                  "var dias = 30 + Math.floor(Math.random() * 700);",
+                  "var f = new Date(Date.now() + dias * 86400000 - 6 * 3600000).toISOString().slice(0, 10);",
+                  "pm.collectionVariables.set('runId', Date.now().toString());",
+                  "pm.collectionVariables.set('fechaCita', f);",
+                  "pm.collectionVariables.set('horaCita', horas[Math.floor(Math.random() * horas.length)]);",
+                  "['medico_id', 'paciente_id', 'cita_id'].forEach(function (k) { pm.collectionVariables.unset(k); });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Mensaje: MongoDB', function () { pm.expect(pm.response.json().mensaje).to.include('MongoDB'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "estado"
+              ]
+            },
+            "description": "Primer request de la corrida: genera runId, fechaCita y horaCita únicos para no chocar con datos anteriores."
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 · Doctores",
+      "item": [
+        {
+          "name": "POST registro doctor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('success = true', function () { pm.expect(pm.response.json().success).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/doctores/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctores",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dr. Prueba {{runId}}\",\n  \"usuario\": \"doc_{{runId}}\",\n  \"email\": \"doc_{{runId}}@medic.test\",\n  \"telefono\": \"5512345678\",\n  \"cedula\": \"CED{{runId}}\",\n  \"especialidad\": \"Cardiología\",\n  \"pass\": \"Test1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST registro doctor duplicado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: ya se encuentran registrados', function () { pm.expect(pm.response.json().message).to.include('ya se encuentran registrados'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/doctores/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctores",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Dr. Prueba {{runId}}\",\n  \"usuario\": \"doc_{{runId}}\",\n  \"email\": \"doc_{{runId}}@medic.test\",\n  \"telefono\": \"5512345678\",\n  \"cedula\": \"CED{{runId}}\",\n  \"especialidad\": \"Cardiología\",\n  \"pass\": \"Test1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST registro doctor sin campos obligatorios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: Faltan campos obligatorios', function () { pm.expect(pm.response.json().message).to.include('Faltan campos obligatorios'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/doctores/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctores",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sin cedula\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST login doctor OK (por usuario)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('Login exitoso y redirige al dashboard', function () { pm.expect(j.success).to.be.true; pm.expect(j.redirectUrl).to.eql('doctor-dashboard.html'); });",
+                  "pm.test('Rol médico y sin contraseña en la respuesta', function () { pm.expect(j.usuario.rol).to.eql('medico'); pm.expect('pass' in j.usuario).to.be.false; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/doctores/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctores",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificador\": \"doc_{{runId}}\",\n  \"pass\": \"Test1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST login doctor OK (por email)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/doctores/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctores",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificador\": \"doc_{{runId}}@medic.test\",\n  \"pass\": \"Test1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST login doctor contraseña incorrecta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('Mensaje: Contraseña incorrecta', function () { pm.expect(pm.response.json().message).to.include('Contraseña incorrecta'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/doctores/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctores",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificador\": \"doc_{{runId}}\",\n  \"pass\": \"incorrecta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST login doctor inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Mensaje: no encontrado', function () { pm.expect(pm.response.json().message).to.include('no encontrado'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/doctores/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctores",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificador\": \"no_existe_{{runId}}\",\n  \"pass\": \"x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST login doctor sin campos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/doctores/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctores",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 · Pacientes",
+      "item": [
+        {
+          "name": "POST registro paciente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('success = true', function () { pm.expect(pm.response.json().success).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Paciente Prueba {{runId}}\",\n  \"usuario\": \"pac_{{runId}}\",\n  \"email\": \"pac_{{runId}}@medic.test\",\n  \"telefono\": \"5587654321\",\n  \"pass\": \"Test1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST registro paciente duplicado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: ya se encuentran registrados', function () { pm.expect(pm.response.json().message).to.include('ya se encuentran registrados'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Paciente Prueba {{runId}}\",\n  \"usuario\": \"pac_{{runId}}\",\n  \"email\": \"pac_{{runId}}@medic.test\",\n  \"telefono\": \"5587654321\",\n  \"pass\": \"Test1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST registro paciente sin campos obligatorios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: Faltan campos obligatorios', function () { pm.expect(pm.response.json().message).to.include('Faltan campos obligatorios'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/registro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "registro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Solo nombre\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST login paciente OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('Login exitoso y redirige al dashboard', function () { pm.expect(j.success).to.be.true; pm.expect(j.redirectUrl).to.eql('patient-dashboard.html'); });",
+                  "pm.test('Devuelve _id y expediente, sin contraseña', function () { pm.expect(j.usuario).to.have.property('_id'); pm.expect(j.usuario).to.have.property('expediente'); pm.expect('pass' in j.usuario).to.be.false; });",
+                  "pm.collectionVariables.set('paciente_id', j.usuario._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificador\": \"pac_{{runId}}\",\n  \"pass\": \"Test1234!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST login paciente contraseña incorrecta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('Mensaje: Contraseña incorrecta', function () { pm.expect(pm.response.json().message).to.include('Contraseña incorrecta'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificador\": \"pac_{{runId}}\",\n  \"pass\": \"incorrecta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST login paciente inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Mensaje: no encontrado', function () { pm.expect(pm.response.json().message).to.include('no encontrado'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificador\": \"no_existe_{{runId}}\",\n  \"pass\": \"x\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST login paciente sin campos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 · Citas (paciente)",
+      "item": [
+        {
+          "name": "GET médicos disponibles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var lista = pm.response.json();",
+                  "pm.test('Es un arreglo', function () { pm.expect(lista).to.be.an('array'); });",
+                  "var nombre = 'Dr. Prueba ' + pm.collectionVariables.get('runId');",
+                  "var m = lista.filter(function (x) { return x.nombre === nombre; })[0];",
+                  "pm.test('Aparece el médico recién registrado', function () { pm.expect(!!m).to.be.true; });",
+                  "pm.test('No expone contraseñas', function () { pm.expect(lista.every(function (x) { return !('pass' in x); })).to.be.true; });",
+                  "if (m) { pm.collectionVariables.set('medico_id', m._id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/medicos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "medicos"
+              ]
+            },
+            "description": "El login de doctor no devuelve _id, por eso el medico_id se obtiene de este listado buscando por nombre."
+          }
+        },
+        {
+          "name": "GET citas ocupadas (calendario)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Es un arreglo', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST crear cita OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "var j = pm.response.json();",
+                  "pm.test('Devuelve cita_id válido', function () { pm.expect(/^[a-f0-9]{24}$/i.test(j.cita_id)).to.be.true; });",
+                  "pm.collectionVariables.set('cita_id', j.cita_id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paciente_id\": \"{{paciente_id}}\",\n  \"medico_id\": \"{{medico_id}}\",\n  \"fecha\": \"{{fechaCita}}\",\n  \"hora\": \"{{horaCita}}\",\n  \"motivo_consulta\": \"Dolor de cabeza persistente (prueba Postman)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST crear cita en horario ocupado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Mensaje: ya está ocupado', function () { pm.expect(pm.response.json().mensaje).to.include('ya está ocupado'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paciente_id\": \"{{paciente_id}}\",\n  \"medico_id\": \"{{medico_id}}\",\n  \"fecha\": \"{{fechaCita}}\",\n  \"hora\": \"{{horaCita}}\",\n  \"motivo_consulta\": \"Dolor de cabeza persistente (prueba Postman)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Depende de que la colección \"agenda\" tenga un índice único (medico_id + fecha_hora). El código maneja el error 11000, pero el modelo de Mongoose no declara el índice: si responde 201 aquí, falta crearlo en la base de datos."
+          }
+        },
+        {
+          "name": "POST crear cita con hora no permitida",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: Completa correctamente', function () { pm.expect(pm.response.json().mensaje).to.include('Completa correctamente'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paciente_id\": \"{{paciente_id}}\",\n  \"medico_id\": \"{{medico_id}}\",\n  \"fecha\": \"{{fechaCita}}\",\n  \"hora\": \"08:15\",\n  \"motivo_consulta\": \"Dolor de cabeza persistente (prueba Postman)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST crear cita en fecha pasada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: futuras', function () { pm.expect(pm.response.json().mensaje).to.include('futuras'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paciente_id\": \"{{paciente_id}}\",\n  \"medico_id\": \"{{medico_id}}\",\n  \"fecha\": \"2020-01-01\",\n  \"hora\": \"{{horaCita}}\",\n  \"motivo_consulta\": \"Dolor de cabeza persistente (prueba Postman)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST crear cita con formato de fecha inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paciente_id\": \"{{paciente_id}}\",\n  \"medico_id\": \"{{medico_id}}\",\n  \"fecha\": \"03/11/2027\",\n  \"hora\": \"{{horaCita}}\",\n  \"motivo_consulta\": \"Dolor de cabeza persistente (prueba Postman)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST crear cita con paciente_id inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paciente_id\": \"abc\",\n  \"medico_id\": \"{{medico_id}}\",\n  \"fecha\": \"{{fechaCita}}\",\n  \"hora\": \"{{horaCita}}\",\n  \"motivo_consulta\": \"Dolor de cabeza persistente (prueba Postman)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST crear cita con motivo demasiado corto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paciente_id\": \"{{paciente_id}}\",\n  \"medico_id\": \"{{medico_id}}\",\n  \"fecha\": \"{{fechaCita}}\",\n  \"hora\": \"{{horaCita}}\",\n  \"motivo_consulta\": \"ab\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST crear cita con médico inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: no está disponible', function () { pm.expect(pm.response.json().mensaje).to.include('no está disponible'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paciente_id\": \"{{paciente_id}}\",\n  \"medico_id\": \"000000000000000000000000\",\n  \"fecha\": \"{{fechaCita}}\",\n  \"hora\": \"{{horaCita}}\",\n  \"motivo_consulta\": \"Dolor de cabeza persistente (prueba Postman)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST crear cita con paciente inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: Paciente no encontrado', function () { pm.expect(pm.response.json().mensaje).to.include('Paciente no encontrado'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paciente_id\": \"000000000000000000000000\",\n  \"medico_id\": \"{{medico_id}}\",\n  \"fecha\": \"{{fechaCita}}\",\n  \"hora\": \"{{horaCita}}\",\n  \"motivo_consulta\": \"Dolor de cabeza persistente (prueba Postman)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET citas incluye la cita nueva (sin datos privados)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var c = pm.response.json().filter(function (x) { return x._id === pm.collectionVariables.get('cita_id'); })[0];",
+                  "pm.test('La cita aparece y está pendiente', function () { pm.expect(!!c).to.be.true; pm.expect(c.estado).to.eql('pendiente'); });",
+                  "pm.test('No expone paciente ni motivo', function () { pm.expect('paciente_id' in c).to.be.false; pm.expect('motivo_consulta' in c).to.be.false; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 · Agenda (doctor)",
+      "item": [
+        {
+          "name": "GET agenda del día del médico",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var c = pm.response.json().filter(function (x) { return x._id === pm.collectionVariables.get('cita_id'); })[0];",
+                  "pm.test('Incluye la cita creada', function () { pm.expect(!!c).to.be.true; });",
+                  "pm.test('Trae los datos del paciente', function () { pm.expect(c.paciente.nombre).to.eql('Paciente Prueba ' + pm.collectionVariables.get('runId')); });",
+                  "pm.test('No filtra pass, usuario ni email del paciente', function () { pm.expect('pass' in c.paciente).to.be.false; pm.expect('usuario' in c.paciente).to.be.false; pm.expect('email' in c.paciente).to.be.false; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agenda?fecha={{fechaCita}}&medico_id={{medico_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "agenda"
+              ],
+              "query": [
+                {
+                  "key": "fecha",
+                  "value": "{{fechaCita}}"
+                },
+                {
+                  "key": "medico_id",
+                  "value": "{{medico_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET agenda de un médico sin citas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Arreglo vacío', function () { pm.expect(pm.response.json().length).to.eql(0); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agenda?fecha={{fechaCita}}&medico_id=000000000000000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "agenda"
+              ],
+              "query": [
+                {
+                  "key": "fecha",
+                  "value": "{{fechaCita}}"
+                },
+                {
+                  "key": "medico_id",
+                  "value": "000000000000000000000000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET agenda sin fecha",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: Fecha no válida', function () { pm.expect(pm.response.json().mensaje).to.include('Fecha no válida'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agenda",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "agenda"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET agenda con fecha mal formada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agenda?fecha=2027/01/15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "agenda"
+              ],
+              "query": [
+                {
+                  "key": "fecha",
+                  "value": "2027/01/15"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET agenda con medico_id inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('Mensaje: Médico no válido', function () { pm.expect(pm.response.json().mensaje).to.include('Médico no válido'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agenda?fecha={{fechaCita}}&medico_id=abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "agenda"
+              ],
+              "query": [
+                {
+                  "key": "fecha",
+                  "value": "{{fechaCita}}"
+                },
+                {
+                  "key": "medico_id",
+                  "value": "abc"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 · Consultas (finalizar)",
+      "item": [
+        {
+          "name": "POST finalizar sin observaciones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/{{cita_id}}/finalizar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "{{cita_id}}",
+                "finalizar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"\",\n  \"prescripcion\": \"Reposo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST finalizar con id inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/abc/finalizar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "abc",
+                "finalizar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"Paciente estable\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST finalizar con prescripción no válida",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/{{cita_id}}/finalizar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "{{cita_id}}",
+                "finalizar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"Paciente estable\",\n  \"prescripcion\": 123\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST finalizar cita inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('Mensaje: no existe', function () { pm.expect(pm.response.json().mensaje).to.include('no existe'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/000000000000000000000000/finalizar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "000000000000000000000000",
+                "finalizar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"Paciente estable\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST finalizar consulta OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Devuelve consulta_id válido', function () { pm.expect(/^[a-f0-9]{24}$/i.test(pm.response.json().consulta_id)).to.be.true; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/{{cita_id}}/finalizar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "{{cita_id}}",
+                "finalizar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"Paciente estable, sin signos de alarma.\",\n  \"prescripcion\": \"Paracetamol 500 mg cada 8 h por 3 días\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST finalizar la misma consulta otra vez",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('Mensaje: ya fue finalizada', function () { pm.expect(pm.response.json().mensaje).to.include('ya fue finalizada'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/citas/{{cita_id}}/finalizar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citas",
+                "{{cita_id}}",
+                "finalizar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"Segundo intento\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET agenda muestra la cita completada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+                  "var c = pm.response.json().filter(function (x) { return x._id === pm.collectionVariables.get('cita_id'); })[0];",
+                  "pm.test('Estado completada', function () { pm.expect(c.estado).to.eql('completada'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/agenda?fecha={{fechaCita}}&medico_id={{medico_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "agenda"
+              ],
+              "query": [
+                {
+                  "key": "fecha",
+                  "value": "{{fechaCita}}"
+                },
+                {
+                  "key": "medico_id",
+                  "value": "{{medico_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

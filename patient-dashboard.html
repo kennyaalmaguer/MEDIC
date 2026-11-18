@@ -17,7 +17,7 @@
 
   
 <style>
-  /* El tema recorta el texto del desplegable; se fuerza altura y color */
+  
   #searchSpecialty, #searchMedico {
     height: calc(1.5em + .75rem + 2px) !important;
     line-height: 1.5 !important;
@@ -46,7 +46,7 @@
 <body class="bg-gray">
 <div class="page-wrapper">
 
-  <!-- Encabezado Superior con Botón de Correo en Esquina Superior Derecha -->
+  
   <header class="patient-header shadow-sm mb-4">
     <div class="container">
       <div class="row align-items-center">
@@ -71,9 +71,7 @@
 
   <div class="container">
 
-    <!-- ==========================================
-         1. MÓDULO DE RECORDATORIO PROMINENTE
-         ========================================== -->
+
     <div class="row mb-4">
       <div class="col-12">
         <div class="reminder-card">
@@ -90,12 +88,12 @@
             </div>
 
             <div class="col-lg-4 col-md-12 text-lg-right">
-              <!-- Cuenta Regresiva -->
+        
               <div class="countdown-timer mb-3">
                 <i class="fas fa-hourglass-half mr-1"></i> Falta: <span id="timer">--</span>
               </div>
               <div>
-                  <!-- Botón de Correo / Notificaciones -->
+                 
                 <button class="btn btn-sm btn-outline-primary mr-2" onclick="enviarCorreoRecordatorio()" title="Enviar recordatorio por correo">
                  <i class="fas fa-envelope"></i> <span class="d-none d-sm-inline">Correo</span>
                 </button>
@@ -113,9 +111,7 @@
       </div>
     </div>
 
-    <!-- ==========================================
-         2. CONTROLES DE FECHA Y FILTROS INTEGRADOS
-         ========================================== -->
+    <!--FECHA Y FILTROS INTEGRADOS-->
     <div class="card p-3 mb-4 shadow-sm border-0">
       <div class="row align-items-center">
         <!-- Navegación de Semana -->
@@ -126,7 +122,7 @@
           <span id="weekRangeLabel" class="font-weight-bold text-dark small"></span>
         </div>
         
-        <!-- Paso 1 y 2: especialidad y médico (se llenan desde la base de datos) -->
+        
         <div class="col-lg-3 col-md-6 mb-2 mb-md-0">
           <label for="searchSpecialty" class="small font-weight-bold text-muted mb-1">1. Especialidad</label>
           <select id="searchSpecialty" class="form-control" onchange="alCambiarEspecialidad()">
@@ -148,9 +144,7 @@
       </div>
     </div>
 
-    <!-- ==========================================
-         3. CALENDARIO GIGANTE DINÁMICO (REAL DB)
-         ========================================== -->
+    <!--  CALENDARIO -->
     <div class="row mb-5">
       <div class="col-12">
         <div class="calendar-container">
@@ -162,7 +156,7 @@
                 </tr>
               </thead>
               <tbody id="calendarTableBody">
-                <!-- Generado dinámicamente con datos reales -->
+                
               </tbody>
             </table>
           </div>
@@ -177,9 +171,7 @@
       </div>
     </div>
 
-    <!-- ==========================================
-         4. FORMULARIO DE DATOS Y CONFIRMACIÓN (POST DB)
-         ========================================== -->
+    <!-- FORMULARIO-->
     <div class="row">
       <div class="col-12">
         <div class="doctor-card mb-4 p-4">
@@ -232,7 +224,7 @@
 
 </div>
 
-<!-- Modal: Recordatorio enviado por correo -->
+
 <div class="modal fade" id="modalRecordatorio" tabindex="-1" role="dialog" aria-labelledby="modalRecordatorioTitulo" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content border-0 shadow">
@@ -279,8 +271,8 @@ let guardandoCita = false;
 
 let medicosBD = [];
 let citasBD = [];
-let espSel = '';      // especialidad elegida ('' = todas)
-let medSel = '';      // _id del médico elegido ('' = todos)
+let espSel = '';      
+let medSel = '';    
 let errorCarga = false;
 
 const horasAgenda = ['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '03:00 PM', '04:00 PM', '05:30 PM'];
@@ -297,16 +289,16 @@ function normalizarNombre(nombre) {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
-// Cargar las citas desde la Base de Datos
+// Cargar las citas 
 async function cargarCitas() {
   const resCitas = await fetch('/api/citas');
   if (!resCitas.ok) throw new Error('No se pudieron cargar las citas.');
   const citas = await resCitas.json();
-  // El servidor manda la hora en 24h ('13:00'); la agenda usa 12h ('01:00 PM')
+  
   citasBD = citas.map(c => ({ ...c, hora: hora24a12(c.hora) }));
 }
 
-// Cargar médicos y citas reales desde la Base de Datos (sin datos de ejemplo)
+// Cargar médicos y citas 
 async function sincronizarBaseDeDatos() {
   try {
     const resMedicos = await fetch('/api/medicos');
@@ -326,7 +318,7 @@ async function sincronizarBaseDeDatos() {
   renderCalendarGrid();
 }
 
-// Las especialidades salen de los médicos que existen en la base de datos
+// Las especialidades 
 function llenarEspecialidades() {
   const sel = document.getElementById('searchSpecialty');
   const especialidades = [...new Set(medicosBD.map(m => m.especialidad).filter(Boolean))]
@@ -337,7 +329,7 @@ function llenarEspecialidades() {
   sel.value = espSel;
 }
 
-// Los médicos del desplegable son los de la especialidad elegida
+// Los medicos 
 function llenarMedicos() {
   const sel = document.getElementById('searchMedico');
 
@@ -369,7 +361,7 @@ function alCambiarMedico() {
   renderCalendarGrid();
 }
 
-// Quita el horario escogido (y opcionalmente el mensaje)
+
 function resetSeleccion(limpiarMensaje) {
   selectedDoctorId = null;
   selectedDoctorName = null;
@@ -385,7 +377,7 @@ function resetSeleccion(limpiarMensaje) {
   }
 }
 
-// Texto que le dice al usuario qué hacer en cada paso
+
 function actualizarGuia() {
   const guia = document.getElementById('guiaPasos');
   const icono = '<i class="fas fa-info-circle mr-1"></i> ';
@@ -410,9 +402,9 @@ function actualizarGuia() {
   }
 }
 
-// ---------- Utilidades de fecha y hora (Ciudad de México, UTC-6) ----------
+
 const ZONA = 'America/Mexico_City';
-let citaProxima = null;   // { cita, inicio, especialidad }
+let citaProxima = null;   
 let temporizador = null;
 
 function escaparHTML(texto) {
@@ -421,7 +413,7 @@ function escaparHTML(texto) {
   }[c]));
 }
 
-// '13:00' -> '01:00 PM'
+
 function hora24a12(hhmm) {
   const m = String(hhmm).match(/^(\d{1,2}):(\d{2})/);
   if (!m) return hhmm;
@@ -429,19 +421,19 @@ function hora24a12(hhmm) {
   return String(h % 12 || 12).padStart(2, '0') + ':' + m[2] + ' ' + (h >= 12 ? 'PM' : 'AM');
 }
 
-// Fecha local del navegador en formato YYYY-MM-DD (sin desfase por UTC)
+
 function fechaLocalYMD(d) {
   return d.getFullYear() + '-' +
     String(d.getMonth() + 1).padStart(2, '0') + '-' +
     String(d.getDate()).padStart(2, '0');
 }
 
-// Momento exacto en que empieza la cita
+
 function inicioDeCita(cita) {
   return new Date(`${cita.fecha}T${convertirHora(cita.hora)}:00-06:00`);
 }
 
-// 'Hoy, 30 de Octubre' / 'Mañana, ...' / 'Viernes, 6 de Noviembre'
+
 function textoFechaBonito(cita, inicio) {
   const hoy = new Date().toLocaleDateString('en-CA', { timeZone: ZONA });
   const manana = new Date(Date.now() + 86400000).toLocaleDateString('en-CA', { timeZone: ZONA });
@@ -476,7 +468,7 @@ function iniciarCuentaRegresiva(inicio) {
     const ms = inicio - new Date();
     if (ms <= 0) {
       clearInterval(temporizador);
-      actualizarModuloRecordatorio();   // pasa a la siguiente cita
+      actualizarModuloRecordatorio();   
       return;
     }
     const dias = Math.floor(ms / 86400000);
@@ -491,7 +483,7 @@ function iniciarCuentaRegresiva(inicio) {
   temporizador = setInterval(actualizar, 1000);
 }
 
-// Actualizar tarjeta superior con la próxima cita real de la DB
+
 function actualizarModuloRecordatorio() {
   const proxima = obtenerProximaCita();
 
@@ -607,7 +599,7 @@ function renderCalendarGrid() {
 
       let celda = '';
 
-      // Médicos libres de la especialidad elegida (vienen de la base de datos)
+      
       libres.forEach(d => {
         const elegido = String(selectedDoctorId) === String(d._id) &&
           selectedTime === hora && selectedDateValue === fechaYMD;
@@ -625,8 +617,7 @@ function renderCalendarGrid() {
           </div>`;
       });
 
-      // Sin especialidad elegida: solo se ven las citas ya hechas; el resto queda en blanco
-
+      
       // Horario que ya pasó y sin citas
       if (!celda && yaPaso && espSel) {
         celda = `

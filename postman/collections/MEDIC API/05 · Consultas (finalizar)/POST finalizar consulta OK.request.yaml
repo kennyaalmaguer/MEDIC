@@ -1,0 +1,19 @@
+$kind: http-request
+url: http://localhost:3000/api/citas/{{cita_id}}/finalizar
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "observaciones": "Paciente estable, sin signos de alarma.",
+      "prescripcion": "Paracetamol 500 mg cada 8 h por 3 días"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 201', function () { pm.response.to.have.status(201); });
+      pm.test('Devuelve consulta_id válido', function () { pm.expect(/^[a-f0-9]{24}$/i.test(pm.response.json().consulta_id)).to.be.true; });
+    language: text/javascript
+order: 5000

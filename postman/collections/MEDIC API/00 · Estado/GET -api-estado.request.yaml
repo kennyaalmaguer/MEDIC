@@ -1,0 +1,23 @@
+$kind: http-request
+name: GET /api/estado
+description: "Primer request: genera runId, fechaCita y horaCita únicos para no chocar con datos anteriores."
+url: http://localhost:3000/api/estado
+method: GET
+scripts:
+  - type: beforeRequest
+    code: |-
+      // Nueva corrida: genera datos únicos y limpia IDs de la corrida anterior
+      var horas = ['09:00', '10:00', '10:30', '11:00', '13:00', '15:00', '16:00', '16:30', '17:30'];
+      var dias = 30 + Math.floor(Math.random() * 700);
+      var f = new Date(Date.now() + dias * 86400000 - 6 * 3600000).toISOString().slice(0, 10);
+      pm.collectionVariables.set('runId', Date.now().toString());
+      pm.collectionVariables.set('fechaCita', f);
+      pm.collectionVariables.set('horaCita', horas[Math.floor(Math.random() * horas.length)]);
+      ['medico_id', 'paciente_id', 'cita_id'].forEach(function (k) { pm.collectionVariables.unset(k); });
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', function () { pm.response.to.have.status(200); });
+      pm.test('Mensaje: MongoDB', function () { pm.expect(pm.response.json().mensaje).to.include('MongoDB'); });
+    language: text/javascript
+order: 1000

@@ -1,0 +1,22 @@
+$kind: http-request
+url: http://localhost:3000/api/citas
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "paciente_id": "{{paciente_id}}",
+      "medico_id": "{{medico_id}}",
+      "fecha": "{{fechaCita}}",
+      "hora": "08:15",
+      "motivo_consulta": "Dolor de cabeza persistente (prueba Postman)"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 400', function () { pm.response.to.have.status(400); });
+      pm.test('Mensaje: Completa correctamente', function () { pm.expect(pm.response.json().mensaje).to.include('Completa correctamente'); });
+    language: text/javascript
+order: 5000

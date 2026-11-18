@@ -12,7 +12,7 @@ function textoValido(valor, minimo, maximo) {
 
 module.exports = function(db, client) {
 
-  // Obtener los médicos sin exponer contraseñas
+  // Obtener los médicos 
   router.get('/medicos', async (req, res) => {
     try {
       const medicos = await db.collection('doctors')
@@ -31,7 +31,7 @@ module.exports = function(db, client) {
     }
   });
 
-  // Citas ocupadas para el calendario del paciente (sin datos de otros pacientes)
+  // Citas ocupadas
   router.get('/citas', async (req, res) => {
     try {
       const citas = await db.collection('agenda').find(

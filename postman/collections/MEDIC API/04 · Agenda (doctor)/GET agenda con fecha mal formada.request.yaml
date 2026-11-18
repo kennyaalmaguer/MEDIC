@@ -1,0 +1,10 @@
+$kind: http-request
+url: http://localhost:3000/api/agenda?fecha=2027/01/15
+method: GET
+queryParams:
+  fecha: 2027/01/15
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 400', function () { pm.response.to.have.status(400); });
+    language: text/javascript
+order: 4000

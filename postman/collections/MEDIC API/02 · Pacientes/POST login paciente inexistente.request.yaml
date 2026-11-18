@@ -1,0 +1,19 @@
+$kind: http-request
+url: http://localhost:3000/api/pacientes/login
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "identificador": "no_existe_{{runId}}",
+      "pass": "x"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 404', function () { pm.response.to.have.status(404); });
+      pm.test('Mensaje: no encontrado', function () { pm.expect(pm.response.json().message).to.include('no encontrado'); });
+    language: text/javascript
+order: 6000

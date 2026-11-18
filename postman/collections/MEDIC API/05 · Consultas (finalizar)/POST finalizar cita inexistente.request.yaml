@@ -1,0 +1,18 @@
+$kind: http-request
+url: http://localhost:3000/api/citas/000000000000000000000000/finalizar
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "observaciones": "Paciente estable"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 404', function () { pm.response.to.have.status(404); });
+      pm.test('Mensaje: no existe', function () { pm.expect(pm.response.json().mensaje).to.include('no existe'); });
+    language: text/javascript
+order: 4000

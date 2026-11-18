@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/api/doctores/registro"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nombre": "Sin cedula"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 400', function () { pm.response.to.have.status(400); });
+      pm.test('Mensaje: Faltan campos obligatorios', function () { pm.expect(pm.response.json().message).to.include('Faltan campos obligatorios'); });
+    language: text/javascript
+order: 3000

@@ -1,0 +1,22 @@
+$kind: http-request
+url: http://localhost:3000/api/pacientes/login
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "identificador": "pac_{{runId}}",
+      "pass": "Test1234!"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', function () { pm.response.to.have.status(200); });
+      var j = pm.response.json();
+      pm.test('Login exitoso y redirige al dashboard', function () { pm.expect(j.success).to.be.true; pm.expect(j.redirectUrl).to.eql('patient-dashboard.html'); });
+      pm.test('Devuelve _id y expediente, sin contraseña', function () { pm.expect(j.usuario).to.have.property('_id'); pm.expect(j.usuario).to.have.property('expediente'); pm.expect('pass' in j.usuario).to.be.false; });
+      pm.collectionVariables.set('paciente_id', j.usuario._id);
+    language: text/javascript
+order: 4000

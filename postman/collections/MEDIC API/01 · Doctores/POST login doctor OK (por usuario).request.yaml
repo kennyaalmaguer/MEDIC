@@ -1,0 +1,21 @@
+$kind: http-request
+url: "{{baseUrl}}/api/doctores/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "identificador": "doc_{{runId}}",
+      "pass": "Test1234!"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', function () { pm.response.to.have.status(200); });
+      var j = pm.response.json();
+      pm.test('Login exitoso y redirige al dashboard', function () { pm.expect(j.success).to.be.true; pm.expect(j.redirectUrl).to.eql('doctor-dashboard.html'); });
+      pm.test('Rol médico y sin contraseña en la respuesta', function () { pm.expect(j.usuario.rol).to.eql('medico'); pm.expect('pass' in j.usuario).to.be.false; });
+    language: text/javascript
+order: 4000

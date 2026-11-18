@@ -1,0 +1,13 @@
+$kind: http-request
+url: http://localhost:3000/api/agenda?fecha={{fechaCita}}&medico_id=000000000000000000000000
+method: GET
+queryParams:
+  fecha: "{{fechaCita}}"
+  medico_id: "000000000000000000000000"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', function () { pm.response.to.have.status(200); });
+      pm.test('Arreglo vacío', function () { pm.expect(pm.response.json().length).to.eql(0); });
+    language: text/javascript
+order: 2000

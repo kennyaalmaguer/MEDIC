@@ -1,0 +1,17 @@
+$kind: http-request
+url: http://localhost:3000/api/citas/{{cita_id}}/finalizar
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "observaciones": "Paciente estable",
+      "prescripcion": 123
+    }
+scripts:
+  - type: afterResponse
+    code: pm.test('Status 400', function () { pm.response.to.have.status(400); });
+    language: text/javascript
+order: 3000

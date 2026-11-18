@@ -63,7 +63,7 @@ router.post('/login', async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Inicio de sesión exitoso',
-            redirectUrl: 'doctor-dashboard.html', // Página a la que redirige
+            redirectUrl: 'doctor-dashboard.html', 
             usuario: {
                 nombre: doctor.nombre,
                 email: doctor.email,

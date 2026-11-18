@@ -1,0 +1,22 @@
+$kind: http-request
+url: http://localhost:3000/api/citas
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "paciente_id": "{{paciente_id}}",
+      "medico_id": "000000000000000000000000",
+      "fecha": "{{fechaCita}}",
+      "hora": "{{horaCita}}",
+      "motivo_consulta": "Dolor de cabeza persistente (prueba Postman)"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 400', function () { pm.response.to.have.status(400); });
+      pm.test('Mensaje: no está disponible', function () { pm.expect(pm.response.json().mensaje).to.include('no está disponible'); });
+    language: text/javascript
+order: 10000
