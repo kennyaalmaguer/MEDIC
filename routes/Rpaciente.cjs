@@ -6,12 +6,20 @@ const { registrarPaciente, loginPaciente } = require('../api/pacienteAPI.cjs');
 // Endpoint POST para Registro
 router.post('/registro', async (req, res) => {
     try {
-        const expedienteUnico = await registrarPaciente(req.body);
+        const paciente = await registrarPaciente(req.body);
 
         res.status(201).json({
             success: true,
             message: 'Paciente registrado correctamente en la base de datos',
-            expediente: expedienteUnico
+            expediente: paciente.expediente,
+            redirectUrl: 'patient-dashboard.html',
+            usuario: {
+                nombre: paciente.nombre,
+                usuario: paciente.usuario,
+                email: paciente.email,
+                telefono: paciente.telefono || '',
+                expediente: paciente.expediente
+            }
         });
 
     } catch (error) {
@@ -34,7 +42,10 @@ router.post('/login', async (req, res) => {
             redirectUrl: 'patient-dashboard.html',
             usuario: {
                 nombre: paciente.nombre,
-                email: paciente.email
+                usuario: paciente.usuario,
+                email: paciente.email,
+                telefono: paciente.telefono || '',
+                expediente: paciente.expediente || ''
             }
         });
 

@@ -13,15 +13,15 @@ async function registrarPaciente(datos) {
 
     const nuevoPaciente = new Paciente({
         expediente: expedienteUnico,
-        nombre,
-        usuario,
-        email,
-        telefono,
-        pass 
+        nombre: nombre.trim(),
+        usuario: usuario.trim(),
+        email: email.trim().toLowerCase(),
+        telefono: telefono ? telefono.trim() : '',
+        pass
     });
 
-    await nuevoPaciente.save();
-    return expedienteUnico;
+    const guardado = await nuevoPaciente.save();
+    return guardado;
 }
 
 // Lógica para autenticar (login) un paciente
@@ -32,8 +32,10 @@ async function loginPaciente(credenciales) {
         throw { status: 400, message: 'Por favor, ingresa tu usuario/correo y contraseña.' };
     }
 
+    const limpio = identificador.trim();
+
     const paciente = await Paciente.findOne({
-        $or: [{ email: identificador }, { usuario: identificador }]
+        $or: [{ email: limpio.toLowerCase() }, { usuario: limpio }]
     });
 
     if (!paciente) {
