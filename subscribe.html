@@ -4,11 +4,11 @@
 
   <!-- ** Basic Page Needs ** -->
   <meta charset="utf-8">
-  <title>Planes de Suscripción y Pago | MediPortal</title>
+  <title>Plan Único de Suscripción y Pago | MediPortal</title>
 
   <!-- ** Mobile Specific Metas ** -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="description" content="Selecciona tu plan de suscripción e inicia inmediatamente a gestionar tu agenda y pacientes.">
+  <meta name="description" content="Activa tu plan único para consultas, agendar citas y gestiones médicas básicas desde casa.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   
   <!-- ** Plugins Needed for the Project ** -->
@@ -42,18 +42,16 @@
     }
     .pricing-card {
       background: #ffffff;
-      border: 1px solid #e5e5e5;
+      border: 2px solid #48bdc5;
       border-radius: 8px;
-      padding: 30px 20px;
+      padding: 35px 25px;
       transition: all 0.3s ease;
       position: relative;
+      max-width: 520px;
+      margin: 0 auto;
     }
     .pricing-card:hover {
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-    .pricing-card.popular {
-      border: 2px solid #48bdc5; /* Color primario del tema */
-      transform: scale(1.03);
     }
     .badge-popular {
       position: absolute;
@@ -104,11 +102,7 @@
       </div>
       <div class="col-xl-8 col-lg-9">
         <div class="right-side">
-          <ul class="contact-info pl-0 mb-4 mb-md-0">
-           
-          </ul>
-          
-
+          <ul class="contact-info pl-0 mb-4 mb-md-0"></ul>
         </div>
       </div>
     </div>
@@ -128,7 +122,7 @@
           <a class="nav-link" href="index.html">Inicio</a>
         </li>
         <li class="nav-item active">
-          <a class="nav-link" href="#planes">Planes y Precios</a>
+          <a class="nav-link" href="#planes">Plan Único</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#pago">Proceso de Pago</a>
@@ -142,26 +136,26 @@
 =            Page Title             =
 ==================================-->
 <section class="page-title text-center" style="background-image:url(images/background/3.jpg);">
-    <div class="container">
-        <div class="title-text">
-            <h1>Suscripción y Proceso de Pago</h1>
-            <ul class="title-menu list-inline">
-                <li class="list-inline-item"><a href="index.html">Inicio</a></li>
-                <li class="list-inline-item">/</li>
-                <li class="list-inline-item active">Planes de Suscripción</li>
-            </ul>
-        </div>
+  <div class="container">
+    <div class="title-text">
+      <h1>Suscripción y Proceso de Pago</h1>
+      <ul class="title-menu list-inline">
+        <li class="list-inline-item"><a href="index.html">Inicio</a></li>
+        <li class="list-inline-item">/</li>
+        <li class="list-inline-item active">Plan Único</li>
+      </ul>
     </div>
+  </div>
 </section>
 
 <!--=================================
-=     Tabla Comparativa de Planes   =
+=        Plan Único Esencial        =
 ==================================-->
 <section id="planes" class="service-section section">
   <div class="container">
     <div class="section-title text-center">
-      <h3>Elige el Plan Ideal <span>para tu Práctica</span></h3>
-      <p>Selecciona la frecuencia de pago y el nivel de servicio que necesitas. Puedes cambiar de plan en cualquier momento.</p>
+      <h3>Un Solo Plan, <span>Todo Simple Desde Casa</span></h3>
+      <p>Consultas sencillas, agenda de citas y funciones médicas básicas sin complicaciones.</p>
       
       <!-- Selector Mensual / Anual -->
       <div class="switch-toggle-wrapper mt-4">
@@ -170,81 +164,33 @@
           <input type="checkbox" class="custom-control-input" id="billingToggle" onchange="toggleBilling()">
           <label class="custom-control-label" for="billingToggle"></label>
         </div>
-      
-        <span class="font-weight-bold">Pago Anual <span class="badge badge-success">(Ahorra 20%)</span></span>
+        <span class="font-weight-bold">Pago Anual <span class="badge badge-success">(Ahorra $600 MXN)</span></span>
       </div>
     </div>
-  <hr>
-    <!-- Cards de Planes -->
-    <div class="row align-items-center justify-content-center">
-      
-      <!-- Plan Individual -->
-      <div class="col-lg-4 col-md-6 mb-4">
+    <hr>
+
+    <!-- Card Única -->
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8 mb-4">
         <div class="pricing-card text-center">
-          <h4 class="font-weight-bold">Plan Individual</h4>
-          <p class="text-muted">Para médicos o psicólogos independientes.</p>
+          <span class="badge-popular">Plan Único</span>
+          <h4 class="font-weight-bold">Plan Casa Esencial</h4>
+          <p class="text-muted">Ideal para llevar consultas, agendar citas y lo básico médico desde casa.</p>
           <div class="price my-3">
-            <h2 class="d-inline-block font-weight-bold text-dark price-val" data-monthly="29" data-yearly="23">$29</h2>
-            <span class="text-muted">USD / mes</span>
+            <h2 class="d-inline-block font-weight-bold text-dark price-val">$150</h2>
+            <span class="text-muted" id="pricePeriodLabel">MXN / mes</span>
           </div>
-          <button class="btn btn-style-one w-100 my-3" onclick="selectPlan('Plan Individual', 29)">Seleccionar Plan</button>
+          <button class="btn btn-main w-100 my-3" onclick="irAPago()">Activar Plan Único</button>
           
           <hr>
           <ul class="text-left list-unstyled mt-3">
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Límite de Pacientes:</strong> Hasta 200</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Almacenamiento:</strong> 10 GB</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Número de Médicos:</strong> 1 Profesional</li>
-            <li class="py-1"><i class="fa fa-times text-muted mr-2"></i> <strong>Medicamentos Controlados:</strong> No incluido (o Inhabilitado para Psicología)</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> Agenda en Línea y Consultas</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Consultas Sencillas:</strong> Seguimiento claro y rápido desde casa</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Agendar Citas:</strong> Calendario fácil para organizar tus horarios</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Cosas Básicas Médicas:</strong> Notas básicas, recordatorios y datos esenciales</li>
+            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Acceso Desde Casa:</strong> Entra desde tu computadora o celular sin líos</li>
           </ul>
         </div>
       </div>
-
-      <!-- Plan Clínica (Destacado) -->
-      <div class="col-lg-4 col-md-6 mb-4">
-        <div class="pricing-card popular text-center">
-          <span class="badge-popular">Más Popular</span>
-          <h4 class="font-weight-bold">Plan Clínica</h4>
-          <p class="text-muted">Para consultorios en crecimiento y especialidades.</p>
-          <div class="price my-3">
-            <h2 class="d-inline-block font-weight-bold text-dark price-val" data-monthly="49" data-yearly="39">$49</h2>
-            <span class="text-muted">USD / mes</span>
-          </div>
-          <button class="btn btn-main w-100 my-3" onclick="selectPlan('Plan Clínica', 49)">Seleccionar Plan</button>
-          
-          <hr>
-          <ul class="text-left list-unstyled mt-3">
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Límite de Pacientes:</strong> Ilimitados</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Almacenamiento:</strong> 100 GB</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Número de Médicos:</strong> Hasta 3 Profesionales</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Medicamentos Controlados:</strong> Módulo Completo</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> Recetas Digitales y Firma</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Plan Institucional -->
-      <div class="col-lg-4 col-md-6 mb-4">
-        <div class="pricing-card text-center">
-          <h4 class="font-weight-bold">Plan Institucional</h4>
-          <p class="text-muted">Para centros médicos o sanatorios completos.</p>
-          <div class="price my-3">
-            <h2 class="d-inline-block font-weight-bold text-dark price-val" data-monthly="89" data-yearly="71">$89</h2>
-            <span class="text-muted">USD / mes</span>
-          </div>
-          <button class="btn btn-style-one w-100 my-3" onclick="selectPlan('Plan Institucional', 89)">Seleccionar Plan</button>
-          
-          <hr>
-          <ul class="text-left list-unstyled mt-3">
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Límite de Pacientes:</strong> Ilimitados</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Almacenamiento:</strong> 1 TB (Nube dedicada)</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Número de Médicos:</strong> Médicos Ilimitados</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> <strong>Medicamentos Controlados:</strong> Avanzado con Inventario</li>
-            <li class="py-1"><i class="fa fa-check text-success mr-2"></i> Soporte Prioritario 24/7</li>
-          </ul>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
@@ -264,7 +210,7 @@
           </div>
           
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="font-weight-bold" id="summaryPlanName">Plan Clínica</span>
+            <span class="font-weight-bold" id="summaryPlanName">Plan Casa Esencial</span>
             <span class="badge badge-info" id="summaryBillingCycle">Mensual</span>
           </div>
           
@@ -273,18 +219,18 @@
           
           <div class="d-flex justify-content-between mb-2">
             <span>Subtotal:</span>
-            <span id="summarySubtotal">$49.00 USD</span>
+            <span id="summarySubtotal">$150.00 MXN</span>
           </div>
           <div class="d-flex justify-content-between mb-2">
             <span>Descuento / Promo:</span>
-            <span class="text-success" id="summaryDiscount">-$0.00 USD</span>
+            <span class="text-success" id="summaryDiscount">$0.00 MXN</span>
           </div>
           <hr>
           <div class="d-flex justify-content-between font-weight-bold h5">
             <span>Total a Pagar Hoy:</span>
-            <span class="text-primary" id="summaryTotal">$0.00 USD</span>
+            <span class="text-primary" id="summaryTotal">$0.00 MXN</span>
           </div>
-          <small class="text-muted d-block text-right">(Posteriormente <span id="summaryRecurring">$49.00 USD/mes</span>)</small>
+          <small class="text-muted d-block text-right">(Posteriormente <span id="summaryRecurring">$150.00 MXN/mes</span>)</small>
           
           <div class="alert alert-success mt-4 mb-0" role="alert">
             <i class="fas fa-shield-alt mr-2"></i> Transacción segura
@@ -411,7 +357,7 @@
           </div>
           <div class="d-flex justify-content-between mb-1">
             <strong>Plan Contratado:</strong>
-            <span id="receiptPlan">Plan Clínica</span>
+            <span id="receiptPlan">Plan Casa Esencial</span>
           </div>
           <div class="d-flex justify-content-between mb-1">
             <strong>Estado del Servicio:</strong>
@@ -419,12 +365,12 @@
           </div>
           <div class="d-flex justify-content-between mb-1">
             <strong>Importe Cobrado Hoy:</strong>
-            <span>$0.00 USD</span>
+            <span>$0.00 MXN</span>
           </div>
         </div>
 
-        <p>Tu plataforma está lista para ser utilizada inmediatamente.</p>
-        <a href="doctor-dashboard.html" class="btn btn-main w-100">Ir a mi Panel de Control</a>
+        <p>Tu plataforma está lista para ser utilizada desde casa.</p>
+        <a href="patient-dashboard.html" class="btn btn-main w-100">Ir a mi Panel</a>
       </div>
     </div>
   </div>
@@ -444,7 +390,7 @@
                 </a>
               </figure>
             </div>
-            <p>Plataforma para la gestión médica, agenda de pacientes y control de expedientes para médicos y psicólogos.</p>
+            <p>Plataforma sencilla para consultas, agendar citas y gestiones médicas básicas desde casa.</p>
           </div>
         </div>
         <div class="col-lg-3 col-md-5 mb-3 mb-md-0">
@@ -481,42 +427,42 @@
 
 <!-- Script Interactivo de Pagos -->
 <script>
-  let currentPlanPrice = 49;
-  let selectedPlanName = "Plan Clínica";
+  const PLAN_NAME = "Plan Casa Esencial";
+  const MONTHLY_PRICE = 150;
+  const YEARLY_PRICE = 1200;
   let isYearly = false;
 
   function toggleBilling() {
     isYearly = document.getElementById('billingToggle').checked;
-    const priceElements = document.querySelectorAll('.price-val');
-    
-    priceElements.forEach(el => {
-      const price = isYearly ? el.getAttribute('data-yearly') : el.getAttribute('data-monthly');
-      el.textContent = '$' + price;
-    });
+    const priceEl = document.querySelector('.price-val');
+    const periodEl = document.getElementById('pricePeriodLabel');
+
+    if (priceEl) {
+      priceEl.textContent = '$' + (isYearly ? YEARLY_PRICE : MONTHLY_PRICE);
+    }
+    if (periodEl) {
+      periodEl.textContent = isYearly ? 'MXN / año' : 'MXN / mes';
+    }
 
     updateSummary();
   }
 
-  function selectPlan(name, price) {
-    selectedPlanName = name;
-    currentPlanPrice = price;
+  function irAPago() {
     updateSummary();
-    
-    // Desplazar al formulario de pago
     $('html, body').animate({
       scrollTop: $("#pago").offset().top - 50
     }, 500);
   }
 
   function updateSummary() {
-    const finalPrice = isYearly ? Math.round(currentPlanPrice * 0.8) : currentPlanPrice;
+    const amount = isYearly ? YEARLY_PRICE : MONTHLY_PRICE;
     const cycleText = isYearly ? "Anual" : "Mensual";
     const recurringUnit = isYearly ? "/año" : "/mes";
 
-    document.getElementById('summaryPlanName').textContent = selectedPlanName;
+    document.getElementById('summaryPlanName').textContent = PLAN_NAME;
     document.getElementById('summaryBillingCycle').textContent = cycleText;
-    document.getElementById('summarySubtotal').textContent = '$' + finalPrice + '.00 USD';
-    document.getElementById('summaryRecurring').textContent = '$' + finalPrice + '.00 USD' + recurringUnit;
+    document.getElementById('summarySubtotal').textContent = '$' + amount + '.00 MXN';
+    document.getElementById('summaryRecurring').textContent = '$' + amount + '.00 MXN' + recurringUnit;
   }
 
   function setPaymentMethod(method, element) {
@@ -535,12 +481,10 @@
   function processPayment(event) {
     event.preventDefault();
     
-    // Generar Folio Aleatorio
     const randomFolio = '#MP-' + Math.floor(10000 + Math.random() * 90000);
     document.getElementById('receiptFolio').textContent = randomFolio;
-    document.getElementById('receiptPlan').textContent = selectedPlanName;
+    document.getElementById('receiptPlan').textContent = PLAN_NAME + (isYearly ? ' (Anual)' : ' (Mensual)');
 
-    // Mostrar Modal de Confirmación
     $('#receiptModal').modal('show');
   }
 </script>

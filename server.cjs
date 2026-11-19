@@ -21,7 +21,7 @@ app.use(express.static(carpetaSitio));
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(carpetaSitio, 'login.html')); 
+  res.sendFile(path.join(carpetaSitio, 'login.html'));
 });
 
 // Ruta para el dashboard del paciente
@@ -39,23 +39,22 @@ app.get('/api/estado', async (req, res) => {
   }
 });
 
-// 3. TUS RUTAS (ENDPOINTS) CONECTADAS
+// 2. RUTAS (ENDPOINTS) CONECTADAS
 app.use('/api/doctores', require('./routes/Rdoctor.cjs'));
 app.use('/api/pacientes', require('./routes/Rpaciente.cjs'));
+app.use('/api/paciente', require('./routes/Pdashboarth.cjs'));
 
 // Función para inicializar base de datos y servidor
 async function iniciar() {
-  // Conexión con Mongoose para tus modelos
   await mongoose.connect(process.env.MONGODB_URI, {
     dbName: process.env.MONGODB_DB || 'medic',
     family: 4,
     tlsAllowInvalidCertificates: true
   });
 
-  // Conexión con MongoClient nativo para transacciones y agendaP.cjs
-  const client = new MongoClient(process.env.MONGODB_URI, { 
-    family: 4, 
-    tlsAllowInvalidCertificates: true 
+  const client = new MongoClient(process.env.MONGODB_URI, {
+    family: 4,
+    tlsAllowInvalidCertificates: true
   });
   await client.connect();
   db = client.db(process.env.MONGODB_DB || 'medic');

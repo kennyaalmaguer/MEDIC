@@ -5,42 +5,41 @@
   <title>Portal del Paciente | MediPortal</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  
+
   <!-- Plugins Needed for the Project -->
   <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
   <link rel="stylesheet" href="plugins/fontawesome/css/all.min.css">
   <link rel="stylesheet" href="plugins/animate.css">
-  
+
   <!-- Stylesheet -->
   <link href="css/style.css" rel="stylesheet">
   <link rel="icon" href="images/favicon.png" type="image/x-icon">
 
-  
-<style>
-  /* El tema recorta el texto del desplegable; se fuerza altura y color */
-  #searchSpecialty, #searchMedico {
-    height: calc(1.5em + .75rem + 2px) !important;
-    line-height: 1.5 !important;
-    padding: .375rem 2rem .375rem .75rem !important;
-    color: #495057 !important;
-    background-color: #fff;
-  }
-  .slot-past {
-    padding: 8px 6px;
-    border: 1px dashed #ced4da;
-    border-radius: 8px;
-    background: #f1f3f5;
-    color: #adb5bd;
-    text-align: center;
-    cursor: not-allowed;
-    user-select: none;
-  }
-  .slot-past strong { color: #adb5bd; }
-  .calendar-slot-cell .slot-event,
-  .calendar-slot-cell .slot-booked,
-  .calendar-slot-cell .slot-past { margin-bottom: 6px; }
-  .calendar-slot-cell > :last-child { margin-bottom: 0; }
-</style>
+  <style>
+    /* El tema recorta el texto del desplegable; se fuerza altura y color */
+    #searchSpecialty, #searchMedico {
+      height: calc(1.5em + .75rem + 2px) !important;
+      line-height: 1.5 !important;
+      padding: .375rem 2rem .375rem .75rem !important;
+      color: #495057 !important;
+      background-color: #fff;
+    }
+    .slot-past {
+      padding: 8px 6px;
+      border: 1px dashed #ced4da;
+      border-radius: 8px;
+      background: #f1f3f5;
+      color: #adb5bd;
+      text-align: center;
+      cursor: not-allowed;
+      user-select: none;
+    }
+    .slot-past strong { color: #adb5bd; }
+    .calendar-slot-cell .slot-event,
+    .calendar-slot-cell .slot-booked,
+    .calendar-slot-cell .slot-past { margin-bottom: 6px; }
+    .calendar-slot-cell > :last-child { margin-bottom: 0; }
+  </style>
 </head>
 
 <body class="bg-gray">
@@ -58,12 +57,14 @@
           </div>
         </div>
         <div class="col-md-8 col-6 text-right d-flex align-items-center justify-content-end">
-        
+
           <div class="user-profile mr-3 text-right d-none d-md-block border-left pl-3">
-            <h6 class="mb-0 font-weight-bold" id="headerUserName">María López</h6>
-            <small class="text-muted">Paciente</small>
+            <h6 class="mb-0 font-weight-bold" id="headerUserName">Cargando usuario...</h6>
+            <small class="text-muted" id="headerUserMeta">Paciente</small>
           </div>
-          <a href="login.html" class="btn btn-sm btn-outline-danger" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
+          <a href="login.html" id="btnCerrarSesion" class="btn btn-sm btn-outline-danger" title="Cerrar Sesión">
+            <i class="fas fa-sign-out-alt"></i>
+          </a>
         </div>
       </div>
     </div>
@@ -82,7 +83,7 @@
               <span class="badge badge-info px-3 py-1 mb-2"><i class="fas fa-bell mr-1"></i> Próxima Cita</span>
               <h3 class="font-weight-bold text-dark mb-1" id="proximaCitaDoctor">Cargando próxima cita...</h3>
               <p class="text-muted mb-2" id="proximaCitaDetalles"><i class="fas fa-stethoscope text-primary mr-1"></i> Sincronizando con el sistema...</p>
-              
+
               <div class="d-flex align-items-center flex-wrap gap-3">
                 <span class="text-dark font-weight-bold mr-3" id="proximaCitaFechaText"><i class="far fa-calendar-alt text-primary mr-1"></i> --</span>
                 <span class="text-dark font-weight-bold" id="proximaCitaHoraText"><i class="far fa-clock text-primary mr-1"></i> --</span>
@@ -95,16 +96,14 @@
                 <i class="fas fa-hourglass-half mr-1"></i> Falta: <span id="timer">--</span>
               </div>
               <div>
-                  <!-- Botón de Correo / Notificaciones -->
+                <!-- Botón de Correo / Notificaciones -->
                 <button class="btn btn-sm btn-outline-primary mr-2" onclick="enviarCorreoRecordatorio()" title="Enviar recordatorio por correo">
-                 <i class="fas fa-envelope"></i> <span class="d-none d-sm-inline">Correo</span>
+                  <i class="fas fa-envelope"></i> <span class="d-none d-sm-inline">Correo</span>
                 </button>
-          
+
                 <button class="btn btn-sm btn-outline-secondary mr-3" onclick="downloadICS()" title="Descargar Calendario .ICS">
                   <i class="fas fa-calendar-plus"></i> <span class="d-none d-sm-inline">.ICS</span>
                 </button>
-
-                
               </div>
             </div>
 
@@ -125,7 +124,7 @@
           <button class="btn btn-sm btn-outline-secondary mr-3" onclick="changeWeek(1)" title="Semana Siguiente"><i class="fas fa-chevron-right"></i></button>
           <span id="weekRangeLabel" class="font-weight-bold text-dark small"></span>
         </div>
-        
+
         <!-- Paso 1 y 2: especialidad y médico (se llenan desde la base de datos) -->
         <div class="col-lg-3 col-md-6 mb-2 mb-md-0">
           <label for="searchSpecialty" class="small font-weight-bold text-muted mb-1">1. Especialidad</label>
@@ -188,12 +187,12 @@
           <div class="row">
             <div class="col-md-6 form-group">
               <label for="pacienteNombre">Nombre completo del paciente</label>
-              <input id="pacienteNombre" type="text" class="form-control" maxlength="120" value="María López">
+              <input id="pacienteNombre" type="text" class="form-control" maxlength="120" placeholder="Nombre del paciente">
             </div>
 
             <div class="col-md-6 form-group">
               <label for="pacienteTelefono">Teléfono de contacto</label>
-              <input id="pacienteTelefono" type="tel" class="form-control" maxlength="25" value="8123456789">
+              <input id="pacienteTelefono" type="tel" class="form-control" maxlength="25" placeholder="Teléfono de contacto">
             </div>
 
             <div class="col-md-6 form-group">
@@ -272,8 +271,85 @@ let citasBD = [];
 let espSel = '';      // especialidad elegida ('' = todas)
 let medSel = '';      // _id del médico elegido ('' = todos)
 let errorCarga = false;
+let usuarioActual = null;
 
 const horasAgenda = ['09:00 AM', '10:00 AM', '11:00 AM', '01:00 PM', '03:00 PM', '04:00 PM', '05:30 PM'];
+
+function obtenerUsuarioGuardado() {
+  const claves = ['usuarioPaciente', 'paciente', 'usuario', 'sesionUsuario'];
+  for (const clave of claves) {
+    const rawLocal = localStorage.getItem(clave);
+    const rawSession = sessionStorage.getItem(clave);
+    const raw = rawLocal || rawSession;
+    if (!raw) continue;
+
+    try {
+      const parsed = JSON.parse(raw);
+      const data = parsed && parsed.usuario ? parsed.usuario : parsed;
+      if (data && (data.nombre || data.usuario || data.email)) {
+        return data;
+      }
+    } catch {
+      if (raw.trim()) {
+        return { usuario: raw.trim(), nombre: raw.trim() };
+      }
+    }
+  }
+  return null;
+}
+
+function aplicarDatosUsuario(user) {
+  if (!user) return;
+  usuarioActual = { ...usuarioActual, ...user };
+
+  const headerNameEl = document.getElementById('headerUserName');
+  const headerMetaEl = document.getElementById('headerUserMeta');
+  const nombreInput = document.getElementById('pacienteNombre');
+  const telefonoInput = document.getElementById('pacienteTelefono');
+
+  const textoHeader = user.nombre || user.usuario || user.email || 'Paciente';
+  if (headerNameEl) headerNameEl.textContent = textoHeader;
+
+  if (headerMetaEl) {
+    headerMetaEl.textContent = user.usuario ? `Paciente (@${user.usuario})` : 'Paciente';
+  }
+
+  if (nombreInput && !nombreInput.value.trim() && (user.nombre || user.usuario)) {
+    nombreInput.value = user.nombre || user.usuario;
+  }
+
+  if (telefonoInput && !telefonoInput.value.trim() && user.telefono) {
+    telefonoInput.value = user.telefono;
+  }
+}
+
+async function cargarUsuarioEnDashboard() {
+  const guardado = obtenerUsuarioGuardado();
+  if (!guardado) {
+    window.location.href = 'login.html';
+    return false;
+  }
+
+  aplicarDatosUsuario(guardado);
+
+  const identificador = guardado.usuario || guardado.email || guardado.nombre;
+  if (!identificador) return true;
+
+  try {
+    const res = await fetch(`/api/paciente/perfil?identificador=${encodeURIComponent(identificador)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.usuario) {
+        aplicarDatosUsuario(data.usuario);
+        localStorage.setItem('usuarioPaciente', JSON.stringify(data.usuario));
+      }
+    }
+  } catch {
+    // Si no hay respuesta del endpoint de perfil, se conservan los datos locales del login
+  }
+
+  return true;
+}
 
 function mensajeCita(texto, tipo) {
   const mensaje = document.getElementById('mensajeCita');
@@ -292,11 +368,10 @@ async function cargarCitas() {
   const resCitas = await fetch('/api/citas');
   if (!resCitas.ok) throw new Error('No se pudieron cargar las citas.');
   const citas = await resCitas.json();
-  // El servidor manda la hora en 24h ('13:00'); la agenda usa 12h ('01:00 PM')
   citasBD = citas.map(c => ({ ...c, hora: hora24a12(c.hora) }));
 }
 
-// Cargar médicos y citas reales desde la Base de Datos (sin datos de ejemplo)
+// Cargar médicos y citas reales desde la Base de Datos
 async function sincronizarBaseDeDatos() {
   try {
     const resMedicos = await fetch('/api/medicos');
@@ -316,7 +391,6 @@ async function sincronizarBaseDeDatos() {
   renderCalendarGrid();
 }
 
-// Las especialidades salen de los médicos que existen en la base de datos
 function llenarEspecialidades() {
   const sel = document.getElementById('searchSpecialty');
   const especialidades = [...new Set(medicosBD.map(m => m.especialidad).filter(Boolean))]
@@ -327,7 +401,6 @@ function llenarEspecialidades() {
   sel.value = espSel;
 }
 
-// Los médicos del desplegable son los de la especialidad elegida
 function llenarMedicos() {
   const sel = document.getElementById('searchMedico');
 
@@ -359,7 +432,6 @@ function alCambiarMedico() {
   renderCalendarGrid();
 }
 
-// Quita el horario escogido (y opcionalmente el mensaje)
 function resetSeleccion(limpiarMensaje) {
   selectedDoctorId = null;
   selectedDoctorName = null;
@@ -375,7 +447,6 @@ function resetSeleccion(limpiarMensaje) {
   }
 }
 
-// Texto que le dice al usuario qué hacer en cada paso
 function actualizarGuia() {
   const guia = document.getElementById('guiaPasos');
   const icono = '<i class="fas fa-info-circle mr-1"></i> ';
@@ -400,9 +471,8 @@ function actualizarGuia() {
   }
 }
 
-// ---------- Utilidades de fecha y hora (Ciudad de México, UTC-6) ----------
 const ZONA = 'America/Mexico_City';
-let citaProxima = null;   // { cita, inicio, especialidad }
+let citaProxima = null;
 let temporizador = null;
 
 function escaparHTML(texto) {
@@ -411,7 +481,6 @@ function escaparHTML(texto) {
   }[c]));
 }
 
-// '13:00' -> '01:00 PM'
 function hora24a12(hhmm) {
   const m = String(hhmm).match(/^(\d{1,2}):(\d{2})/);
   if (!m) return hhmm;
@@ -419,19 +488,16 @@ function hora24a12(hhmm) {
   return String(h % 12 || 12).padStart(2, '0') + ':' + m[2] + ' ' + (h >= 12 ? 'PM' : 'AM');
 }
 
-// Fecha local del navegador en formato YYYY-MM-DD (sin desfase por UTC)
 function fechaLocalYMD(d) {
   return d.getFullYear() + '-' +
     String(d.getMonth() + 1).padStart(2, '0') + '-' +
     String(d.getDate()).padStart(2, '0');
 }
 
-// Momento exacto en que empieza la cita
 function inicioDeCita(cita) {
   return new Date(`${cita.fecha}T${convertirHora(cita.hora)}:00-06:00`);
 }
 
-// 'Hoy, 30 de Octubre' / 'Mañana, ...' / 'Viernes, 6 de Noviembre'
 function textoFechaBonito(cita, inicio) {
   const hoy = new Date().toLocaleDateString('en-CA', { timeZone: ZONA });
   const manana = new Date(Date.now() + 86400000).toLocaleDateString('en-CA', { timeZone: ZONA });
@@ -447,7 +513,6 @@ function textoFechaBonito(cita, inicio) {
   return `${dia}, ${diaMes}`;
 }
 
-// Busca la cita futura más cercana
 function obtenerProximaCita() {
   const ahora = new Date();
   const futuras = citasBD
@@ -466,7 +531,7 @@ function iniciarCuentaRegresiva(inicio) {
     const ms = inicio - new Date();
     if (ms <= 0) {
       clearInterval(temporizador);
-      actualizarModuloRecordatorio();   // pasa a la siguiente cita
+      actualizarModuloRecordatorio();
       return;
     }
     const dias = Math.floor(ms / 86400000);
@@ -481,7 +546,6 @@ function iniciarCuentaRegresiva(inicio) {
   temporizador = setInterval(actualizar, 1000);
 }
 
-// Actualizar tarjeta superior con la próxima cita real de la DB
 function actualizarModuloRecordatorio() {
   const proxima = obtenerProximaCita();
 
@@ -529,7 +593,6 @@ function currentWeekToday() {
   renderCalendarGrid();
 }
 
-// Médicos que cumplen el filtro actual
 function medicosFiltrados() {
   return medicosBD.filter(m =>
     (!espSel || m.especialidad === espSel) &&
@@ -543,7 +606,6 @@ function medicoOcupado(doc, fechaYMD, hora) {
   );
 }
 
-// Renderizar la parrilla semanal según la especialidad y el médico elegidos
 function renderCalendarGrid() {
   actualizarGuia();
 
@@ -560,7 +622,6 @@ function renderCalendarGrid() {
   const fridayStr = weekDays[4].toLocaleDateString('es-ES', { month: 'short', day: 'numeric', year: 'numeric' });
   document.getElementById('weekRangeLabel').textContent = `${mondayStr} - ${fridayStr}`;
 
-  // Cabecera
   let headHtml = `<th class="calendar-header-cell"><i class="far fa-clock"></i> Hora</th>`;
   const nombresDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
@@ -570,7 +631,6 @@ function renderCalendarGrid() {
   });
   document.getElementById('calendarTableHead').innerHTML = headHtml;
 
-  // Sin conexión o sin médicos: se explica en lugar de dejar el calendario vacío
   if (errorCarga || medicosBD.length === 0) {
     document.getElementById('calendarTableBody').innerHTML =
       `<tr><td colspan="6" class="text-center text-muted p-5">` +
@@ -597,7 +657,6 @@ function renderCalendarGrid() {
 
       let celda = '';
 
-      // Médicos libres de la especialidad elegida (vienen de la base de datos)
       libres.forEach(d => {
         const elegido = String(selectedDoctorId) === String(d._id) &&
           selectedTime === hora && selectedDateValue === fechaYMD;
@@ -607,7 +666,6 @@ function renderCalendarGrid() {
           </div>`;
       });
 
-      // Citas ya registradas
       ocupados.forEach(d => {
         celda += `
           <div class="slot-booked">
@@ -615,9 +673,6 @@ function renderCalendarGrid() {
           </div>`;
       });
 
-      // Sin especialidad elegida: solo se ven las citas ya hechas; el resto queda en blanco
-
-      // Horario que ya pasó y sin citas
       if (!celda && yaPaso && espSel) {
         celda = `
           <div class="slot-past" title="Este horario ya pasó">
@@ -625,7 +680,6 @@ function renderCalendarGrid() {
           </div>`;
       }
 
-      // Todo ocupado
       if (!celda && espSel) {
         celda = `<div class="text-center text-muted small">Sin disponibilidad</div>`;
       }
@@ -677,7 +731,6 @@ function convertirHora(horaTexto) {
   return String(horas).padStart(2, '0') + ':' + resultado[2];
 }
 
-// Guardar Cita enviándola por POST a la Base de Datos real
 async function confirmAppointment() {
   if (guardandoCita || !selectedTime || !selectedDoctorId) return;
 
@@ -715,7 +768,6 @@ async function confirmAppointment() {
       throw new Error(datos.mensaje || 'Error al guardar en el servidor.');
     }
 
-    // Agregar a la lista local inmediatamente para reflejarlo en el calendario
     const medicoCita = medicosBD.find(m => String(m._id) === String(selectedDoctorId));
     citasBD.push({
       _id: datos.cita_id,
@@ -738,7 +790,6 @@ async function confirmAppointment() {
     renderCalendarGrid();
 
   } catch (error) {
-    // Si falla, se avisa con claridad (no se finge que la cita quedó guardada)
     const sinConexion = error instanceof TypeError;
     mensajeCita(
       sinConexion ? 'No se pudo conectar con el servidor. Intenta de nuevo.' : error.message,
@@ -750,7 +801,7 @@ async function confirmAppointment() {
     if (sinConexion) {
       document.getElementById('btnConfirmarCita').removeAttribute('disabled');
     } else {
-      resetSeleccion(false);   // el horario ya no sirve: hay que escoger otro
+      resetSeleccion(false);
     }
     actualizarModuloRecordatorio();
     renderCalendarGrid();
@@ -759,13 +810,24 @@ async function confirmAppointment() {
   }
 }
 
-// Inicializar al cargar la página
-window.onload = function() {
-  // Un solo "oyente" para los clics dentro del calendario
+window.onload = async function() {
+  const btnCerrar = document.getElementById('btnCerrarSesion');
+  if (btnCerrar) {
+    btnCerrar.addEventListener('click', function() {
+      ['usuarioPaciente', 'paciente', 'usuario', 'sesionUsuario'].forEach(k => {
+        localStorage.removeItem(k);
+        sessionStorage.removeItem(k);
+      });
+    });
+  }
+
   document.getElementById('calendarTableBody').addEventListener('click', function(e) {
     const slot = e.target.closest('[data-doc]');
     if (slot) selectTimeSlot(slot, slot.dataset.doc, slot.dataset.hora, slot.dataset.fecha);
   });
+
+  const sesionValida = await cargarUsuarioEnDashboard();
+  if (!sesionValida) return;
 
   sincronizarBaseDeDatos();
 };
@@ -774,7 +836,6 @@ function enviarCorreoRecordatorio() {
   $('#modalRecordatorio').modal('show');
 }
 
-// Descargar archivo .ICS para calendario de Outlook / Google
 function downloadICS() {
   if (!citaProxima) {
     mensajeCita('No hay una cita próxima para agregar al calendario.', 'warning');
